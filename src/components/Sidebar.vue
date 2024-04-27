@@ -23,7 +23,7 @@ const handleSelect = (key) => {
 </script>
 
 <template>
-  <el-radio-group style="margin-bottom: 20px">
+  <el-radio-group style="margin-bottom: 60px">
   </el-radio-group>
     <el-menu
         mode="vertical"
@@ -89,25 +89,6 @@ const handleSelect = (key) => {
   width: 64px;
 }
 
-.collapse-button {
-  /* 当菜单收缩时，按钮在左侧，展开时，在菜单旁边 */
-  margin-left: 200px;
-  transition: margin-left 0.3s; /* 添加平滑过渡 */
-  padding: 10px;
-  cursor: pointer;
-}
-
-.menu-header {
-  flex-grow: 1; /* 使菜单和按钮在同一水平线上 */
-  display: flex; /* 使用 flex 布局 */
-  align-items: center; /* 确保菜单和按钮在同一行内 */
-}
-
-.collapse-button {
-  cursor: pointer;
-  padding: 5px;
-  margin-right: 10px; /* 与菜单之间留一点间距 */
-}
 
 
 </style>
