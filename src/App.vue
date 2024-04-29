@@ -1,11 +1,14 @@
 <script setup>
 import Sidebar from "@/components/Sidebar.vue";
 import Header from "@/components/Header.vue";
+import {useMenu} from "@/store/menu.js";
+import TabsPage from "@/components/TabsPage.vue";
+const menuStore = useMenu();
 </script>
 
 <template>
   <el-container>
-    <el-aside width="200px">
+    <el-aside :style="{width: menuStore.isCollapse ? '64px' : '200px'}">
       <Sidebar/>
     </el-aside>
     <el-container>
@@ -13,7 +16,7 @@ import Header from "@/components/Header.vue";
         <Header/>
       </el-header>
       <el-main>
-        <router-view></router-view>
+        <TabsPage></TabsPage>
       </el-main>
     </el-container>
   </el-container>
@@ -38,4 +41,8 @@ header {
     flex-wrap: wrap;
   }
 }
+.el-header {
+  padding: 0;
+}
+
 </style>

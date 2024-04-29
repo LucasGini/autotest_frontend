@@ -1,5 +1,4 @@
 <script setup>
-import {ref} from "vue";
 import {useMenu} from '../store/menu.js'
 const menuStore = useMenu()
 
@@ -16,5 +15,13 @@ const menuStore = useMenu()
 </template>
 
 <style scoped>
+
+.collapse-button {
+  transition: margin-left 0.3s;
+  padding: 10px;
+  cursor: pointer;
+}
+
+
 
 </style>

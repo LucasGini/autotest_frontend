@@ -17,7 +17,7 @@ export const useMenu = defineStore('menu', () => {
         }
     }
 
-    async function toggleCollapse() {
+    function toggleCollapse() {
         isCollapse.value = !isCollapse.value
         console.log(isCollapse.value)
     }
