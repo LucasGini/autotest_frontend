@@ -1,6 +1,7 @@
 <script setup>
 import {reactive, ref} from 'vue'
 import { useMenu } from '../store/menu'
+import { useTabs } from "@/store/tabs.js";
 import router from "@/router/index.js";
 
 
@@ -11,14 +12,26 @@ let isCollapse = menuStore.isCollapse
 menuStore.getMenu()
 menuList = menuStore.menu
 
-const menuClick = (key, keyPath) => {
-  console.log(key, keyPath)
-
+const tabsStore = useTabs()
+// 比较两个对象是否有相同值
+const isSameObject = (a, b) => {
+  return a.id === b.id && a.name === b.name
 }
 
-const handleSelect = (key) => {
-  console.log(isCollapse)
-  router.push(key)
+// 点击菜单，新增标签页
+const menuClick = (item) => {
+  console.log(item)
+  // 定位到对应标签页
+  router.push(item.path)
+  tabsStore.updateEditableTabsValue(item.path)
+  // editableTabs中存在相同的对象则不新增
+  if (!tabsStore.editableTabs.some(obj => isSameObject(obj, item))){
+    tabsStore.addTabs(item)
+  }
+}
+const handleSelect = (key, indexPath) => {
+  console.log(key)
+  console.log(indexPath)
 }
 </script>
 
@@ -51,7 +64,7 @@ const handleSelect = (key) => {
                   </template>
                   <template v-for="grandchild in child.children">
                     <template v-if="grandchild.is_hidden">
-                      <el-menu-item :key="grandchild.id" :index="grandchild.path" @click="menuClick">
+                      <el-menu-item :key="grandchild.id" :index="grandchild.path" @click="menuClick(grandchild)">
                         <component class="el-icon" :is="grandchild.icon"></component>
                         <span slot="title">{{ grandchild.name }}</span>
                       </el-menu-item>
@@ -60,7 +73,7 @@ const handleSelect = (key) => {
                 </el-sub-menu>
               </template>
               <template v-else-if="child.is_hidden">
-                <el-menu-item :index="child.path" :key="child.id" @click="menuClick">
+                <el-menu-item :index="child.path" :key="child.id" @click="menuClick(child)">
                   <component class="el-icon" :is="child.icon"></component>
                   <span slot="title">{{ child.name }}</span>
                 </el-menu-item>
@@ -69,7 +82,7 @@ const handleSelect = (key) => {
           </el-sub-menu>
         </template>
         <template v-else-if="item.is_hidden">
-          <el-menu-item :index="item.path" :key="item.id" @click="menuClick">
+          <el-menu-item :index="item.path" :key="item.id" @click="menuClick(item)">
             <component class="el-icon" :is="item.icon"></component>
             <span slot="title">{{ item.name }}</span>
           </el-menu-item>

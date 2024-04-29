@@ -2,6 +2,7 @@
 import Sidebar from "@/components/Sidebar.vue";
 import Header from "@/components/Header.vue";
 import {useMenu} from "@/store/menu.js";
+import TabsPage from "@/components/TabsPage.vue";
 const menuStore = useMenu();
 </script>
 
@@ -15,7 +16,7 @@ const menuStore = useMenu();
         <Header/>
       </el-header>
       <el-main>
-        <router-view></router-view>
+        <TabsPage></TabsPage>
       </el-main>
     </el-container>
   </el-container>
@@ -43,7 +44,5 @@ header {
 .el-header {
   padding: 0;
 }
-.el-main {
-  padding: 0;
-}
+
 </style>
