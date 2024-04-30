@@ -3,18 +3,22 @@ import axios from 'axios'
 import {reactive, ref} from "vue";
 
 export const useMenu = defineStore('menu', () => {
-    let menu = reactive([])
+    let menuList = reactive([])
     let isCollapse = ref(false)
+    let activePath = ref('')
 
     async function getMenu() {
         try {
             const response = await axios.get('http://localhost:8000/basic/systemMenu')
-            menu.value = response.data.data
+            menuList.value = response.data.data
             return response.data
         } catch (error) {
             console.log(error)
             throw error
         }
+    }
+    function updateActivePath(path) {
+        activePath.value = path
     }
 
     function toggleCollapse() {
@@ -22,9 +26,11 @@ export const useMenu = defineStore('menu', () => {
         console.log(isCollapse.value)
     }
     return {
-        menu,
+        menuList,
+        activePath,
         getMenu,
         isCollapse,
-        toggleCollapse
+        toggleCollapse,
+        updateActivePath
     }
 })
