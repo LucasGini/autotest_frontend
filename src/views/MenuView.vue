@@ -2,7 +2,13 @@
 import {useTabs} from "@/store/tabs.js";
 
 const tabsStore = useTabs()
+import { onBeforeRouteUpdate } from 'vue-router';
 
+onBeforeRouteUpdate((to, from, next) => {
+  console.log('Route is updating from', from.path, 'to', to.path);
+  // 您可以在这里执行其他操作
+  next(); // 继续路由更新
+});
 
 
 </script>

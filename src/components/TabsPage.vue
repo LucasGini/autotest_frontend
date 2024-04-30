@@ -13,35 +13,27 @@ function handleTabsEdit(targetName, action) {
   if (action === 'remove') {
     // 删除标签页
     tabsStore.removeTabs(targetName)
-    // 如果删除的是选中的标签页，如果标签页大于0，则选中第一个标签
+    // 如果删除的是选中的标签页，如果标签页大于0，则选中左边的标签
     if (tabsStore.editableTabsValue === targetName && tabsStore.editableTabs.length > 0) {
-      tabsStore.updateEditableTabsValue(tabsStore.editableTabs[0].path)
-      router.push(tabsStore.editableTabs[0].path)
+      // 删除标签页后选中的标签页本地存起来，用于刷新选中标签页
+      localStorage.setItem('selectedTab', JSON.stringify(tabsStore.editableTabs[tabsStore.editableTabs.length-1]))
+      let path = tabsStore.editableTabs[tabsStore.editableTabs.length-1].path
+      tabsStore.updateEditableTabsValue(path)
+      router.push(path)
     } else if ( tabsStore.editableTabs.length === 0 ) {
-      tabsStore.updateEditableTabsValue('')
+      tabsStore.updateEditableTabsValue('/')
     }
   }
 }
 
 // 选择标签的操作
-function handleTabsClick(pane, ev) {
+function handleTabsClick(pane) {
   console.log(pane)
-  console.log(ev)
-  const index = tabsStore.editableTabs.findIndex(tabs => tabs.path === pane.paneName)
-  console.log('tabsStore.editableTabs[index]', tabsStore.editableTabs[index])
-  localStorage.setItem('selectedTab', tabsStore.editableTabs[index])
-  console.log('selectedTab', localStorage.getItem('selectedTab'))
+  console.log(tabsStore.editableTabs.filter(t => t.path === pane.paneName)[0])
+  localStorage.setItem('selectedTab', JSON.stringify(tabsStore.editableTabs.filter(t => t.path === pane.paneName)[0]))
   router.push(pane.paneName)
 }
 
-//
-function handleTabsChange(name) {
-  console.log('handleTabsChange' ,name)
-}
-
-function handleTabsAdd() {
-  console.log('新增标签成功')
-}
 
 </script>
 
@@ -52,8 +44,6 @@ function handleTabsAdd() {
       class="tabsItem"
       @edit="handleTabsEdit"
       @tab-click="handleTabsClick"
-      @tab-change="handleTabsChange"
-      @tab-add="handleTabsAdd"
   >
     <el-tab-pane
         v-for="item in tabsStore.editableTabs"

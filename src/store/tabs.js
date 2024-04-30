@@ -16,11 +16,15 @@ export const useTabs = defineStore('tabs', () => {
     }
 
     function addTabs(tabs) {
-        if (tabs.id === 0) {
-            tabs.closable = false
-        } else {
-            tabs.closable = true
+        if (!tabs) {
+            return
         }
+        tabs.closable = tabs.id !== 0;
+        // 选中的标签本地存储起来，用于刷新页面后定位到选中页签
+        localStorage.setItem('selectedTab', JSON.stringify(tabs))
+        // 定位到新增的标签
+        updateEditableTabsValue(tabs.path)
+        // 如果标签对象不存在editableTabs中，则新增
         if (!editableTabs.some(obj => isSameObject(obj, tabs))){
             editableTabs.push(tabs)
         }

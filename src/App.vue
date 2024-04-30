@@ -48,6 +48,7 @@ header {
 .el-header {
   padding: 0;
   margin: 0;
+  height: 60px;
 }
 .el-main {
   padding: 0;
