@@ -8,7 +8,7 @@ export const useMenu = defineStore('menu', () => {
 
     async function getMenu() {
         try {
-            const response = await axios.get('http://localhost:8000/basic/systemMenu')
+            const response = await axios.get('http://localhost:8888/basic/systemMenu')
             menu.value = response.data.data
             return response.data
         } catch (error) {

@@ -41,8 +41,17 @@ header {
     flex-wrap: wrap;
   }
 }
+.el-aside {
+  padding: 0;
+  margin: 0;
+}
 .el-header {
   padding: 0;
+  margin: 0;
+}
+.el-main {
+  padding: 0;
+  margin: 0;
 }
 
 </style>

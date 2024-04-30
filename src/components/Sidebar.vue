@@ -14,24 +14,20 @@ menuList = menuStore.menu
 
 const tabsStore = useTabs()
 // 比较两个对象是否有相同值
-const isSameObject = (a, b) => {
-  return a.id === b.id && a.name === b.name
-}
 
 // 点击菜单，新增标签页
 const menuClick = (item) => {
-  console.log(item)
+  console.log('menuClick',item)
   // 定位到对应标签页
   router.push(item.path)
   tabsStore.updateEditableTabsValue(item.path)
   // editableTabs中存在相同的对象则不新增
-  if (!tabsStore.editableTabs.some(obj => isSameObject(obj, item))){
-    tabsStore.addTabs(item)
-  }
+  tabsStore.addTabs(item)
+  localStorage.setItem('selectedTab', item)
 }
 const handleSelect = (key, indexPath) => {
-  console.log(key)
-  console.log(indexPath)
+  console.log('handleSelect: key', key)
+  console.log('handleSelect: indexPath', indexPath)
 }
 </script>
 

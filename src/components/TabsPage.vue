@@ -7,6 +7,8 @@ const tabsStore = useTabs()
 
 // 处理新增或者删除标签的事件
 function handleTabsEdit(targetName, action) {
+  console.log(targetName)
+  console.log(action)
   // 如果操作为remove
   if (action === 'remove') {
     // 删除标签页
@@ -14,6 +16,7 @@ function handleTabsEdit(targetName, action) {
     // 如果删除的是选中的标签页，如果标签页大于0，则选中第一个标签
     if (tabsStore.editableTabsValue === targetName && tabsStore.editableTabs.length > 0) {
       tabsStore.updateEditableTabsValue(tabsStore.editableTabs[0].path)
+      router.push(tabsStore.editableTabs[0].path)
     } else if ( tabsStore.editableTabs.length === 0 ) {
       tabsStore.updateEditableTabsValue('')
     }
@@ -22,14 +25,18 @@ function handleTabsEdit(targetName, action) {
 
 // 选择标签的操作
 function handleTabsClick(pane, ev) {
-  console.log(pane.paneName)
+  console.log(pane)
   console.log(ev)
+  const index = tabsStore.editableTabs.findIndex(tabs => tabs.path === pane.paneName)
+  console.log('tabsStore.editableTabs[index]', tabsStore.editableTabs[index])
+  localStorage.setItem('selectedTab', tabsStore.editableTabs[index])
+  console.log('selectedTab', localStorage.getItem('selectedTab'))
   router.push(pane.paneName)
 }
 
 //
 function handleTabsChange(name) {
-  console.log(name)
+  console.log('handleTabsChange' ,name)
 }
 
 function handleTabsAdd() {
@@ -43,7 +50,6 @@ function handleTabsAdd() {
       v-model="tabsStore.editableTabsValue"
       type="border-card"
       class="tabsItem"
-      closable
       @edit="handleTabsEdit"
       @tab-click="handleTabsClick"
       @tab-change="handleTabsChange"
@@ -55,6 +61,7 @@ function handleTabsAdd() {
         :label="item.name"
         :name="item.path"
         class="tabPane"
+        :closable="item.closable"
     >
       <router-view></router-view>
     </el-tab-pane>
