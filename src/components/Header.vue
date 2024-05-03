@@ -15,7 +15,7 @@ const onBack = () => {
 </script>
 
 <template>
-  <div class="menu-header">
+  <div class="main-header">
     <div class="collapse-button" @click="menuStore.toggleCollapse()">
       <el-icon>
         <component :is="menuStore.isCollapse ? 'Expand' : 'Fold'" />
@@ -25,8 +25,8 @@ const onBack = () => {
       <el-page-header @back="onBack">
         <template #extra>
           <div class="flex items-center">
-            <el-button>Print</el-button>
-            <el-button type="primary" class="ml-2">Edit</el-button>
+            <el-button size="default">Print</el-button>
+            <el-button size="default" type="primary" class="ml-2">Edit</el-button>
           </div>
         </template>
       </el-page-header>
@@ -45,23 +45,26 @@ const onBack = () => {
   height: 40px;  /* 设置按钮高度 */
   cursor: pointer;  /* 鼠标样式 */
 }
-.menu-header {
+.main-header {
+  box-sizing: border-box;
   display: flex;  /* 设置 Flexbox 布局 */
   justify-content: space-between;  /* 左右对齐 */
   align-items: center;  /* 垂直居中 */
   padding: 10px;  /* 添加一些填充 */
-  width: 100%;
+  min-width: 100%;
+  position: absolute;
+  top: 0;
 }
 .pageHeader{
   display: flex;  /* 设置 Flexbox 布局 */
   justify-content: space-between;  /* 左右对齐 */
   align-items: center;  /* 垂直居中 */
-  padding: 10px;  /* 添加一些填充 */
   width: 100%;
 }
 .items-center {
-  margin-right: 10px;
+  margin-right: 30px;
 }
+
 .el-page-header {
   width: 100%;
 }
