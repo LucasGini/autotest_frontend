@@ -7,17 +7,21 @@ const menuStore = useMenu();
 </script>
 
 <template>
-  <el-container>
-    <el-aside :style="{width: menuStore.isCollapse ? '64px' : '200px'}">
-      <Sidebar/>
-    </el-aside>
-    <el-container>
+  <el-container class="main-container">
+    <el-scrollbar>
+      <el-aside :style="{width: menuStore.isCollapse ? '64px' : '200px'}">
+        <Sidebar/>
+      </el-aside>
+    </el-scrollbar>
+    <el-container class="header-and-main-container">
       <el-header>
         <Header/>
       </el-header>
-      <el-main>
-        <TabsPage></TabsPage>
-      </el-main>
+      <el-scrollbar>
+        <el-main>
+          <TabsPage></TabsPage>
+        </el-main>
+      </el-scrollbar>
     </el-container>
   </el-container>
 </template>
@@ -44,11 +48,20 @@ header {
 .el-aside {
   padding: 0;
   margin: 0;
+  width: 200px;
+}
+
+.header-and-main-container {
+}
+.main-container {
+  height: 100vh;
 }
 .el-header {
   padding: 0;
   margin: 0;
   height: 60px;
+  width: 100%;
+  position: relative;
 }
 .el-main {
   padding: 0;

@@ -53,19 +53,30 @@ function handleTabsClick(pane) {
         class="tabPane"
         :closable="item.closable"
     >
-      <router-view></router-view>
     </el-tab-pane>
   </el-tabs>
+  <div class="router-view-container">
+    <router-view></router-view>
+  </div>
 </template>
 
 <style scoped>
+
+.tabsItem {
+  position: fixed;
+  top: 60px;
+  width: 100%;
+  height: 39px;
+  z-index: 100;
+}
+.router-view-container {
+  padding: 54px 15px 15px;
+}
 .tabsItem > .el-tabs__content {
   padding: 32px;
   color: #6b778c;
   font-size: 32px;
   font-weight: 600;
 }
-.tabsItem {
-  height: 100vh;
-}
+
 </style>

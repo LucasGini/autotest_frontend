@@ -1,18 +1,14 @@
 import {createRouter, createWebHistory} from "vue-router";
-import menu from '@/views/MenuView.vue'
 import HomePage from "@/components/HomePage.vue";
+import systemRoutes from "@/router/syetemRouter.js";
 
 const routes = [
-    {
-        path: '/system/menu',
-        name: 'menu',
-        component: menu
-    },
     {
         path: '/',
         name: 'home',
         component: HomePage
-    }
+    },
+    ...systemRoutes,
 ];
 
 const router = createRouter({
