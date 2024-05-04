@@ -1,19 +1,40 @@
 <script setup>
-import { useMenu } from '../store/menu'
+import { useMenu } from '../store/syetem/menu.js'
 import { useTabs } from "@/store/tabs.js";
 import router from "@/router/index.js";
 import {ElMessage} from "element-plus";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, reactive} from "vue";
+import {AxiosError} from "axios";
 
 
 const menuStore = useMenu()
-const menuList = ref([]); // 创建本地 menuList
+let menuList = reactive([]); // 创建本地 menuList
 
 onMounted( async () => {
-  await menuStore.getMenuList(); // 确保请求在组件挂载时发起
-  menuList.value = menuStore.menuList
+  await fetchMenuListData(); // 确保请求在组件挂载时发起
+  menuList.value = menuStore.menuList.value
 
 });
+
+// 查询loading状态
+const searchLoading = ref(false)
+
+const fetchMenuListData =  async () => {
+  searchLoading.value = true
+  // 异步请求测试环境列表
+  try {
+    return await menuStore.getMenuList();
+  } catch ( error ){
+    if (error instanceof AxiosError) {
+      ElMessage.error('菜单请求异常')
+    } else {
+      ElMessage.error('系统异常')
+    }
+  } finally {
+    searchLoading.value = false
+  }
+}
+
 
 
 const tabsStore = useTabs()
@@ -32,22 +53,55 @@ const menuClick = (item) => {
   }
 }
 
+// 通过路由递归查询菜单树
+const recursiveMenuSearch = (menuTree, path) => {
+  console.log(menuTree)
+ for (const menu of menuTree) {
+    if (menu.path === path) {
+      return menu  //返回匹配的菜单
+    }
+    if (menu.children) {
+      // 递归搜索子菜单
+      const found = recursiveMenuSearch(menu.children, path)
+      console.log(found)
+      if (found) {
+        return found;  //返回匹配的菜单
+      }
+    }
+  }
+  return null  //未找到返回空
+}
 
 // 使用导航守卫重定向未知路径
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const knownPaths = router.getRoutes().map(route => route.path); // 所有已知的路径
   if (!knownPaths.includes(to.path)) {
     tabsStore.updateEditableTabsValue('/')
+    localStorage.removeItem('selectedTab')
     next('/');
   } else {
     menuStore.updateActivePath(to.path)
     next(); // 继续路由导航
+    // 等待菜单树加载完成
+    let menuTree = await fetchMenuListData();
+    // 通过路由递归查询菜单树
+    const menu = recursiveMenuSearch(menuTree, to.path)
+    if (to.path === '/') {
+      // 选中首页标签
+      tabsStore.updateEditableTabsValue(to.path)
+      // 初始化标签
+      // tabsStore.initTabs()
+      // 删除本地种保存的标签页
+      localStorage.removeItem('selectedTab')
+    }
+    if (menu) {
+      // 如果查找到,添加标签页
+      tabsStore.addTabs(menu)
+    }
   }
 });
 
 function handleSelect(key, keyPath) {
-  console.log(key)
-  console.log(keyPath)
 }
 </script>
 
@@ -65,6 +119,7 @@ function handleSelect(key, keyPath) {
     </div>
     <el-scrollbar>
       <el-menu
+          v-loading.fullscreen.lock="searchLoading"
           mode="vertical"
           router
           :default-active="menuStore.activePath"
@@ -74,6 +129,7 @@ function handleSelect(key, keyPath) {
           background-color="#304156"
           text-color="#bfcbd9"
           active-text-color="#409EFF"
+          :collapse-transition="false"
       >
         <template v-for="item in menuList.value">
           <template v-if="item.children && item.children.length > 0 &&  item.is_hidden">

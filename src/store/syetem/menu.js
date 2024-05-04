@@ -6,6 +6,7 @@ export const useMenu = defineStore('menu', () => {
     let menuList = reactive([])
     let menu = ref('')
     let isCollapse = ref(false)
+    // 选中的菜单
     let activePath = ref('')
 
     async function getMenuList() {

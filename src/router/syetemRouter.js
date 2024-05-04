@@ -1,5 +1,5 @@
-import TestEnvView from "@/views/TestEnvView.vue";
-import MenuView from "@/views/MenuView.vue";
+import TestEnvView from "@/views/syetem/TestEnvView.vue";
+import MenuView from "@/views/syetem/MenuView.vue";
 
 const systemRoutes = [
     {

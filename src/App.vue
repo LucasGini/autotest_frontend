@@ -1,7 +1,7 @@
 <script setup>
 import Sidebar from "@/components/Sidebar.vue";
 import Header from "@/components/Header.vue";
-import {useMenu} from "@/store/menu.js";
+import {useMenu} from "@/store/syetem/menu.js";
 import TabsPage from "@/components/TabsPage.vue";
 const menuStore = useMenu();
 </script>
@@ -48,10 +48,10 @@ header {
 .el-aside {
   padding: 0;
   margin: 0;
-  width: 200px;
 }
 
 .header-and-main-container {
+  flex: 1;
 }
 .main-container {
   height: 100vh;

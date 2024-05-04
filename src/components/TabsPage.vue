@@ -7,8 +7,6 @@ const tabsStore = useTabs()
 
 // 处理新增或者删除标签的事件
 function handleTabsEdit(targetName, action) {
-  console.log(targetName)
-  console.log(action)
   // 如果操作为remove
   if (action === 'remove') {
     // 删除标签页
@@ -28,8 +26,6 @@ function handleTabsEdit(targetName, action) {
 
 // 选择标签的操作
 function handleTabsClick(pane) {
-  console.log(pane)
-  console.log(tabsStore.editableTabs.filter(t => t.path === pane.paneName)[0])
   localStorage.setItem('selectedTab', JSON.stringify(tabsStore.editableTabs.filter(t => t.path === pane.paneName)[0]))
   router.push(pane.paneName)
 }
@@ -53,6 +49,9 @@ function handleTabsClick(pane) {
         class="tabPane"
         :closable="item.closable"
     >
+      <div class="tab-content">
+
+      </div>
     </el-tab-pane>
   </el-tabs>
   <div class="router-view-container">
@@ -66,17 +65,17 @@ function handleTabsClick(pane) {
   position: fixed;
   top: 60px;
   width: 100%;
-  height: 39px;
+  height: 0;
   z-index: 100;
 }
 .router-view-container {
   padding: 54px 15px 15px;
 }
-.tabsItem > .el-tabs__content {
-  padding: 32px;
-  color: #6b778c;
-  font-size: 32px;
-  font-weight: 600;
+
+:deep.el-tabs--border-card > .el-tabs__content {
+  padding: 0;
 }
+
+
 
 </style>
