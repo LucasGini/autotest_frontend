@@ -1,5 +1,5 @@
 <script setup>
-import {useTestEnv} from "@/store/testEnv.js";
+import {useTestEnv} from "@/store/syetem/testEnv.js";
 import {onMounted, ref, reactive} from "vue";
 import {isEmpty} from "element-plus/es/utils/index";
 import {ElMessage, ElMessageBox} from "element-plus";
@@ -240,7 +240,6 @@ onMounted(async () => {
             <el-form :model="searchForm"
                      class="search-form"
                      label-position="right"
-                     size="default"
             >
               <el-form-item label="环境名称">
                 <el-input v-model="searchForm.envName" placeholder="请输入环境名称"/>
@@ -262,7 +261,6 @@ onMounted(async () => {
             </el-form>
             <div>
               <el-button type="primary"
-                         size="default"
                          @click="handleCreateButtonClick"
               >
                 新增
@@ -275,7 +273,6 @@ onMounted(async () => {
                       stripe
                       border
                       v-loading="searchLoading"
-                      size="default"
                       style="width: 100%; height: 60vh"
                       @sort-change="handleSortChange"
             >
@@ -284,7 +281,6 @@ onMounted(async () => {
                   <el-button
                       link
                       type="primary"
-                      size="default"
                       @click.prevent="handleUpdateButtonClick(scope)"
                   >
                     修改
@@ -292,7 +288,6 @@ onMounted(async () => {
                   <el-button
                       link
                       type="primary"
-                      size="default"
                       @click.prevent="handleDeleteTestEnv(scope)"
                   >
                     删除
@@ -303,7 +298,12 @@ onMounted(async () => {
               <el-table-column :sortable="true" prop="agreement" :formatter="agreementFormatter" label="协议" width="100px"/>
               <el-table-column :sortable="true" prop="hosts" label="域名或ip" width="200px"/>
               <el-table-column :sortable="true" prop="port" label="端口" width="100px"/>
-              <el-table-column prop="remark" label="备注" />
+              <el-table-column prop="remark" label="备注" width="200px"/>
+              <el-table-column :sortable="true" prop="created_date" label="创建时间" width="200px"/>
+              <el-table-column :sortable="true" prop="created_by" label="创建人" width="200px"/>
+              <el-table-column :sortable="true" prop="updated_date" label="更新时间" width="200px"/>
+              <el-table-column :sortable="true" prop="updated_by" label="更新人" width="200px"/>
+
             </el-table>
           </el-main>
           <el-footer class="test-env-footer">
@@ -333,7 +333,6 @@ onMounted(async () => {
                  ref="editFormRef"
                  :rules="editFormRules"
                  class="edit-form"
-                 size="default"
                  label-width="auto"
         >
           <el-form-item label="环境名称" style="width: 300px;" prop="env_name">
@@ -360,14 +359,12 @@ onMounted(async () => {
             <el-button @click="showEditDialog = false" size="default">取消</el-button>
             <el-button type="primary"
                        @click="createFormSubmit"
-                       size="default"
                        v-show="isCreateOrUpdateMode"
             >
               保存
             </el-button>
             <el-button type="primary"
                        @click="updateFormSubmit"
-                       size="default"
                        v-show="!isCreateOrUpdateMode"
             >
               保存
@@ -388,7 +385,7 @@ onMounted(async () => {
   width: 100%;
 }
 .test-env-header {
-  height: 80px;
+  height: 60px;
   width: 100%;
   margin-top: 20px;
 }

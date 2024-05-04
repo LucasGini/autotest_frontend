@@ -1,11 +1,12 @@
 <script setup>
-import {useMenu} from "@/store/menu.js";
+import {useMenu} from "@/store/syetem/menu.js";
 import {reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
 import {isEmpty} from "element-plus/es/utils/index";
 import {createMenu, deleteMenu, updateMenu} from "@/service/basic/menuService.js";
 
 const menuStore = useMenu()
+
 let menuList = menuStore.menuList
 
 const defaultProps = {
@@ -52,7 +53,7 @@ let menuUpdateFormData = reactive({
   component: '',
   icon: '',
   parent_id: '',
-  order_mun: '',
+  order_num: '',
   is_hidden: '',
   parent_name: '',
   id: null

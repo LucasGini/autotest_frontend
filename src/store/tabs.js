@@ -3,18 +3,23 @@ import {reactive, ref} from "vue";
 
 export const useTabs = defineStore('tabs', () => {
 
+    // 标签列表
     let editableTabs = reactive([{
         name: "首页",
         path: '/',
         id: 0,
         closable: false
     }]);
+
+    // 选中的对象
     let editableTabsValue = ref('/')
 
     const isSameObject = (a, b) => {
-        return a.id === b.id && a.name === b.name
+        return a.id === b.id || a.name === b.name
     }
 
+
+    // 添加标签
     function addTabs(tabs) {
         if (!tabs) {
             return
@@ -31,15 +36,23 @@ export const useTabs = defineStore('tabs', () => {
 
     }
 
+
+    // 更新标签选择对象
     function updateEditableTabsValue(data) {
         editableTabsValue.value = data
     }
 
+    // 根据路由删除标签
     function removeTabs(path) {
         const index = editableTabs.findIndex(tabs => tabs.path === path);
         if (index !== -1) { // 如果找到索引
             editableTabs.splice(index, 1); // 删除索引对应的对象
         }
+    }
+
+    // 初始化菜单
+    function initTabs() {
+        editableTabs.splice(1, editableTabs.length)
     }
 
 
@@ -48,6 +61,7 @@ export const useTabs = defineStore('tabs', () => {
         addTabs,
         removeTabs,
         editableTabsValue,
-        updateEditableTabsValue
+        updateEditableTabsValue,
+        initTabs
     }
 })

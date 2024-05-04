@@ -1,5 +1,5 @@
 <script setup>
-import {useMenu} from '../store/menu.js'
+import {useMenu} from '../store/syetem/menu.js'
 import {useTabs} from "@/store/tabs.js";
 import router from "@/router/index.js";
 const menuStore = useMenu()
