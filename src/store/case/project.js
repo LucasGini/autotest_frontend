@@ -1,14 +1,18 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
-import {getProjectList, getProjectInfo} from "@/service/case/testProjectService.js";
+import {getProjectList, getProjectInfo, searchProject} from "@/service/case/testProjectService.js";
+import {getUserList} from "@/service/user/userService.js";
 
 export const useProject = defineStore('project', () => {
 
     // 项目列表
-    let projectList = ref([])
+    const projectList = ref([])
 
     // 项目详情
-    let projectInfo = ref({})
+    const projectInfo = ref({})
+
+    // 查询的项目列表
+    const searchProjectList = ref([])
 
     // 更新项目列表
     const setProjectList = async (config) => {
@@ -35,11 +39,20 @@ export const useProject = defineStore('project', () => {
         }
     }
 
+    // 查询测试项目
+    const setSearchProjectList = async (search) => {
+        const response = await searchProject(search)
+        searchProjectList.value = response.data.data
+        return response
+    }
+
     return {
         projectInfo,
         projectList,
+        searchProjectList,
         setProjectList,
         setProjectInfo,
+        setSearchProjectList
     }
 
 

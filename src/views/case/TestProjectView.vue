@@ -5,6 +5,7 @@ import {AxiosError} from "axios";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {createProject, deleteProject, updateProject} from "@/service/case/testProjectService.js";
 import {isEmpty} from "element-plus/es/utils/index";
+import {useUser} from "@/store/user/user.js"
 
 const projectStore = useProject();
 
@@ -180,7 +181,7 @@ const updateFormSubmit = async () => {
 }
 
 // 删除测试环境功能
-const handleDeleteTestEnv = async (data) => {
+const handleDeleteProject = async (data) => {
   try {
     ElMessageBox.confirm('请确认是否删除', '提示', {
       confirmButtonText: '确定',
@@ -203,6 +204,36 @@ const handleDeleteTestEnv = async (data) => {
   }
 }
 
+// 远程搜索加载状态
+const remoteSearchLoading = ref(false)
+
+const userStore = useUser()
+
+// 用户列表
+const userList = ref([])
+
+// 用户搜索框失去焦点处理方法
+const handleResponsibleBlur = () => {
+  userList.value = []
+}
+
+// 远程搜索用户
+const remoteMethod = async (query) => {
+  if (query) {
+    remoteSearchLoading.value = true
+    try {
+      let response = await userStore.setUserList(query)
+      if (response.status === 200 && !isEmpty(response.data.data)){
+        userList.value = userStore.userList
+      }
+    } catch (error) {
+      ElMessage.error('查询用户异常')
+    } finally {
+      remoteSearchLoading.value = false
+    }
+  }
+}
+
 
 </script>
 
@@ -217,6 +248,26 @@ const handleDeleteTestEnv = async (data) => {
           >
             <el-form-item label="项目名称">
               <el-input v-model="searchForm.projectName" placeholder="请输入环境名称"/>
+            </el-form-item>
+            <el-form-item label="负责人" prop="responsible">
+              <el-select
+                  v-model="searchForm.responsible"
+                  filterable
+                  remote
+                  clearable
+                  reserve-keyword
+                  placeholder="请输入id或用户名"
+                  :remote-method="remoteMethod"
+                  @blur="handleResponsibleBlur"
+                  :loading="remoteSearchLoading"
+              >
+                <el-option
+                    v-for="item in userList"
+                    :key="item.id"
+                    :label="item.username"
+                    :value="item.id"
+                />
+              </el-select>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="searchFormSubmit">查询</el-button>
@@ -239,6 +290,7 @@ const handleDeleteTestEnv = async (data) => {
                     style="width: 100%; height: 60vh"
                     @sort-change="handleSortChange"
           >
+            <el-table-column fixed="left" type="index" label="序号"/>
             <el-table-column fixed="left" label="操作" width="120px">
               <template #default="scope">
                 <el-button
@@ -251,14 +303,14 @@ const handleDeleteTestEnv = async (data) => {
                 <el-button
                     link
                     type="primary"
-                    @click.prevent="handleDeleteTestEnv(scope)"
+                    @click.prevent="handleDeleteProject(scope)"
                 >
                   删除
                 </el-button>
               </template>
             </el-table-column>
             <el-table-column :sortable="true" prop="project_name" label="项目名称" width="120px"/>
-            <el-table-column :sortable="true" prop="responsible" label="责任人id" width="100px"/>
+            <el-table-column :sortable="true" prop="responsible" label="责任人" width="100px"/>
             <el-table-column prop="remark" label="备注" />
             <el-table-column :sortable="true" prop="created_date" label="创建时间" width="200px"/>
             <el-table-column :sortable="true" prop="created_by" label="创建人" width="200px"/>
@@ -272,7 +324,6 @@ const handleDeleteTestEnv = async (data) => {
               :current-page="currentPage"
               :page-size="pageSize"
               :page-sizes="[10, 20, 50, 100, 200]"
-              :hide-on-single-page="true"
               :background="true"
               layout="total, sizes, prev, pager, next, jumper"
               :total="totalItems"
@@ -300,8 +351,26 @@ const handleDeleteTestEnv = async (data) => {
         <el-form-item label="项目名称" style="width: 300px;" prop="project_name">
           <el-input v-model="projectEditForm.project_name" placeholder="请输入项目名称"/>
         </el-form-item>
-        <el-form-item label="负责人id" style="width: 300px;" prop="responsible">
-          <el-input v-model="projectEditForm.responsible" placeholder="请输入责任人id"/>
+        <el-form-item label="负责人" style="width: 300px;" prop="responsible">
+          <el-select
+              v-model="projectEditForm.responsible"
+              filterable
+              remote
+              clearable
+              reserve-keyword
+              placeholder="请输入id或用户名"
+              :remote-method="remoteMethod"
+              @blur="handleResponsibleBlur"
+              :loading="remoteSearchLoading"
+              style="width: 300px"
+          >
+            <el-option
+                v-for="item in userList"
+                :key="item.id"
+                :label="item.username"
+                :value="item.id"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="备注" style="width: 300px;" prop="remark">
           <el-input type="textarea" v-model="projectEditForm.remark" placeholder="请输入备注"/>

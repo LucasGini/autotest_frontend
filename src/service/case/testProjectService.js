@@ -6,6 +6,17 @@ export const getProjectList = async (config) => {
     return await http.get('/case/project', config)
 }
 
+// 查询项目
+export const searchProject = async (search) => {
+    return await http.get('/case/project', {
+        params: {
+            page: 1,
+            page_size: 10,
+            search: search,
+        }
+    })
+}
+
 // 获取项目详情
 export const getProjectInfo = async (projectId) => {
     return await http.get(`/case/project/${projectId}`)
