@@ -8,13 +8,14 @@ import {AxiosError} from "axios";
 
 
 const menuStore = useMenu()
-let menuList = reactive([]); // 创建本地 menuList
+let menuList = ref([]); // 创建本地 menuList
 
 onMounted( async () => {
   await fetchMenuListData(); // 确保请求在组件挂载时发起
-  menuList.value = menuStore.menuList.value
-
 });
+
+// 菜单变更时，实时变更
+menuList.value = menuStore.menuList
 
 // 查询loading状态
 const searchLoading = ref(false)

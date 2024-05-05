@@ -276,6 +276,7 @@ onMounted(async () => {
                       style="width: 100%; height: 60vh"
                       @sort-change="handleSortChange"
             >
+              <el-table-column fixed="left" label="序号" type="index"/>
               <el-table-column fixed="left" label="操作" width="120px">
                 <template #default="scope">
                   <el-button
@@ -311,7 +312,6 @@ onMounted(async () => {
                 :current-page="currentPage"
                 :page-size="pageSize"
                 :page-sizes="[10, 20, 50, 100, 200]"
-                :hide-on-single-page="true"
                 :background="true"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="totalItems"

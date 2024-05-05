@@ -6,11 +6,11 @@ const menuStore = useMenu()
 const tabsStore = useTabs()
 
 
-const onBack = () => {
-  tabsStore.updateEditableTabsValue('/')
-  router.push('/')
-  localStorage.removeItem('selectedTab')
-}
+// const onBack = () => {
+//   tabsStore.updateEditableTabsValue('/')
+//   router.push('/')
+//   localStorage.removeItem('selectedTab')
+// }
 
 </script>
 
@@ -21,16 +21,16 @@ const onBack = () => {
         <component :is="menuStore.isCollapse ? 'Expand' : 'Fold'" />
       </el-icon>
     </div>
-    <div aria-label="A complete example of page header" class="pageHeader">
-      <el-page-header @back="onBack">
-        <template #extra>
-          <div class="flex items-center">
-            <el-button size="default">Print</el-button>
-            <el-button size="default" type="primary" class="ml-2">Edit</el-button>
-          </div>
-        </template>
-      </el-page-header>
-    </div>
+<!--    <div aria-label="A complete example of page header" class="pageHeader">-->
+<!--      <el-page-header @back="onBack">-->
+<!--        <template #extra>-->
+<!--          <div class="flex items-center">-->
+<!--            <el-button size="default">Print</el-button>-->
+<!--            <el-button size="default" type="primary" class="ml-2">Edit</el-button>-->
+<!--          </div>-->
+<!--        </template>-->
+<!--      </el-page-header>-->
+<!--    </div>-->
 
   </div>
 </template>
