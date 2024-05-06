@@ -132,7 +132,7 @@ const menuClick = (item) => {
 
 .sidebar {
   height: 100vh;
-  padding-top: 60px;
+  padding-top: 50px;
   position: relative;
 }
 
@@ -140,7 +140,7 @@ const menuClick = (item) => {
   color: white;
 }
 .menu-header {
-  height: 60px;
+  height: 50px;
   z-index: 100;
   background-color: #3a577e;
   display: flex;  /* 设置 Flexbox 布局 */

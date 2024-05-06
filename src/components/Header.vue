@@ -32,9 +32,10 @@ const menuStore = useMenu()
   display: flex;  /* 设置 Flexbox 布局 */
   justify-content: space-between;  /* 左右对齐 */
   align-items: center;  /* 垂直居中 */
-  padding: 10px;  /* 添加一些填充 */
+  padding: 0;  /* 添加一些填充 */
   min-width: 100%;
   position: absolute;
+  height: 50px;
   top: 0;
 }
 .pageHeader{

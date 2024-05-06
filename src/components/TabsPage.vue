@@ -63,17 +63,21 @@ function handleTabsClick(pane) {
 
 .tabsItem {
   position: fixed;
-  top: 60px;
+  top: 50px;
   width: 100%;
   height: 0;
   z-index: 100;
 }
 .router-view-container {
-  padding: 54px 15px 15px;
+  padding: 44px 15px 15px;
 }
 
 :deep.el-tabs--border-card > .el-tabs__content {
   padding: 0;
+}
+
+:deep.el-tabs--top.el-tabs--border-card>.el-tabs__header .el-tabs__item {
+  height: 30px;
 }
 
 
