@@ -277,8 +277,8 @@ const handleRowDblclick = (row, column, event) => {
                     @sort-change="handleSortChange"
                     @row-dblclick="handleRowDblclick"
           >
-            <el-table-column type="index" fixed="left" label="序号" />
-            <el-table-column fixed="left" label="操作" width="50px">
+            <el-table-column type="index" fixed="left" label="序号" align="center" header-align="left"/>
+            <el-table-column fixed="left" label="操作" width="50px" align="center" header-align="left">
               <template #default="scope">
                 <el-button
                     link
@@ -289,16 +289,16 @@ const handleRowDblclick = (row, column, event) => {
                 </el-button>
               </template>
             </el-table-column>
-            <el-table-column :sortable="true" prop="case_name" label="用例名称" width="120px"/>
-            <el-table-column :sortable="true" prop="project.project_name" label="所属项目" width="100px"/>
-            <el-table-column :sortable="true" prop="priority" label="优先级" width="100px"/>
-            <el-table-column :sortable="true" prop="method" label="请求方法" width="100px" :formatter="methodFormatter"/>
-            <el-table-column :sortable="true" prop="path" label="路径" width="300px"/>
-            <el-table-column :sortable="true" prop="precondition" label="前置请求" width="300px"/>
-            <el-table-column :sortable="true" prop="created_date" label="创建时间" width="200px"/>
-            <el-table-column :sortable="true" prop="created_by" label="创建人" width="200px"/>
-            <el-table-column :sortable="true" prop="updated_date" label="更新时间" width="200px"/>
-            <el-table-column :sortable="true" prop="updated_by" label="更新人" width="200px"/>
+            <el-table-column :sortable="true" prop="case_name" label="用例名称" width="120px" :show-overflow-tooltip="true"/>
+            <el-table-column :sortable="true" prop="project.project_name" label="所属项目" width="100px" :show-overflow-tooltip="true"/>
+            <el-table-column :sortable="true" prop="priority" label="优先级" width="100px" :show-overflow-tooltip="true"/>
+            <el-table-column :sortable="true" prop="method" label="请求方法" width="100px" :formatter="methodFormatter" :show-overflow-tooltip="true"/>
+            <el-table-column :sortable="true" prop="path" label="路径" width="300px" :show-overflow-tooltip="true"/>
+            <el-table-column :sortable="true" prop="precondition" label="前置请求" width="300px" :show-overflow-tooltip="true"/>
+            <el-table-column :sortable="true" prop="created_date" label="创建时间" width="200px" :show-overflow-tooltip="true"/>
+            <el-table-column :sortable="true" prop="created_by" label="创建人" width="200px" :show-overflow-tooltip="true"/>
+            <el-table-column :sortable="true" prop="updated_date" label="更新时间" width="200px" :show-overflow-tooltip="true"/>
+            <el-table-column :sortable="true" prop="updated_by" label="更新人" width="200px" :show-overflow-tooltip="true"/>
           </el-table>
         </el-main>
 

@@ -59,7 +59,7 @@ header {
 .el-header {
   padding: 0;
   margin: 0;
-  height: 60px;
+  height: 50px;
   width: 100%;
   position: relative;
 }

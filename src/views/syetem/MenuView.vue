@@ -192,14 +192,19 @@ let createMenuFormRules = ref({
 
 })
 
-// 点击新增按钮事件函数
-function handleCreateMenu(){
-  // 重置menuCreateFormData的值
+// 重置menuCreateFormData的值
+const initMenuCreateFormData = () => {
   Object.keys(menuCreateFormData).forEach(key => {
     if (key !== 'is_hidden'){
       menuCreateFormData[key] = null
     }
   })
+}
+
+// 点击新增按钮事件函数
+function handleCreateMenu(){
+  // 重置menuCreateFormData的值
+  initMenuCreateFormData()
   isFormDisabled.value = false
   openCreateFormCard()
 }
@@ -207,6 +212,8 @@ function handleCreateMenu(){
 function appSubmenu(data, event) {
   // 阻止事件冒泡，触发父组件的node-click事件
   event.stopPropagation()
+  // 重置menuCreateFormData的值
+  initMenuCreateFormData()
   isFormDisabled.value = false
   openCreateFormCard()
   if (isEmpty(data)) {

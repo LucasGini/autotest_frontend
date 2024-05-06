@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useTabs } from '@/store/tabs';
+import { useTabs } from '@/store/syetem/tabs';
 import router from "@/router/index.js";
 
 
@@ -14,7 +14,7 @@ function handleTabsEdit(targetName, action) {
     // 如果删除的是选中的标签页，如果标签页大于0，则选中左边的标签
     if (tabsStore.editableTabsValue === targetName && tabsStore.editableTabs.length > 0) {
       // 删除标签页后选中的标签页本地存起来，用于刷新选中标签页
-      localStorage.setItem('selectedTab', JSON.stringify(tabsStore.editableTabs[tabsStore.editableTabs.length-1]))
+      sessionStorage.setItem('selectedTab', JSON.stringify(tabsStore.editableTabs[tabsStore.editableTabs.length-1]))
       let path = tabsStore.editableTabs[tabsStore.editableTabs.length-1].path
       tabsStore.updateEditableTabsValue(path)
       router.push(path)
@@ -26,7 +26,7 @@ function handleTabsEdit(targetName, action) {
 
 // 选择标签的操作
 function handleTabsClick(pane) {
-  localStorage.setItem('selectedTab', JSON.stringify(tabsStore.editableTabs.filter(t => t.path === pane.paneName)[0]))
+  sessionStorage.setItem('selectedTab', JSON.stringify(tabsStore.editableTabs.filter(t => t.path === pane.paneName)[0]))
   router.push(pane.paneName)
 }
 
@@ -63,17 +63,21 @@ function handleTabsClick(pane) {
 
 .tabsItem {
   position: fixed;
-  top: 60px;
+  top: 50px;
   width: 100%;
   height: 0;
   z-index: 100;
 }
 .router-view-container {
-  padding: 54px 15px 15px;
+  padding: 44px 15px 15px;
 }
 
 :deep.el-tabs--border-card > .el-tabs__content {
   padding: 0;
+}
+
+:deep.el-tabs--top.el-tabs--border-card>.el-tabs__header .el-tabs__item {
+  height: 30px;
 }
 
 

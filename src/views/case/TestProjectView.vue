@@ -290,8 +290,18 @@ const remoteMethod = async (query) => {
                     style="width: 100%; height: 60vh"
                     @sort-change="handleSortChange"
           >
-            <el-table-column fixed="left" type="index" label="序号"/>
-            <el-table-column fixed="left" label="操作" width="120px">
+            <el-table-column fixed="left"
+                             type="index"
+                             label="序号"
+                             header-align="left"
+                             align="center"
+            />
+            <el-table-column fixed="left"
+                             label="操作"
+                             width="120px"
+                             align="center"
+                             header-align="left"
+            >
               <template #default="scope">
                 <el-button
                     link
@@ -309,13 +319,46 @@ const remoteMethod = async (query) => {
                 </el-button>
               </template>
             </el-table-column>
-            <el-table-column :sortable="true" prop="project_name" label="项目名称" width="120px"/>
-            <el-table-column :sortable="true" prop="responsible" label="责任人" width="100px"/>
-            <el-table-column prop="remark" label="备注" />
-            <el-table-column :sortable="true" prop="created_date" label="创建时间" width="200px"/>
-            <el-table-column :sortable="true" prop="created_by" label="创建人" width="200px"/>
-            <el-table-column :sortable="true" prop="updated_date" label="更新时间" width="200px"/>
-            <el-table-column :sortable="true" prop="updated_by" label="更新人" width="200px"/>
+            <el-table-column :sortable="true"
+                             prop="project_name"
+                             label="项目名称"
+                             width="120px"
+                             :show-overflow-tooltip="true"
+            />
+            <el-table-column :sortable="true"
+                             prop="responsible"
+                             label="责任人"
+                             width="100px"
+                             :show-overflow-tooltip="true"
+            />
+            <el-table-column prop="remark"
+                             label="备注" width="400px"
+                             :show-overflow-tooltip="true"
+            />
+            <el-table-column :sortable="true"
+                             prop="created_date"
+                             label="创建时间"
+                             width="200px"
+                             :show-overflow-tooltip="true"
+            />
+            <el-table-column :sortable="true"
+                             prop="created_by"
+                             label="创建人"
+                             width="200px"
+                             :show-overflow-tooltip="true"
+            />
+            <el-table-column :sortable="true"
+                             prop="updated_date"
+                             label="更新时间"
+                             width="200px"
+                             :show-overflow-tooltip="true"
+            />
+            <el-table-column :sortable="true"
+                             prop="updated_by"
+                             label="更新人"
+                             width="200px"
+                             :show-overflow-tooltip="true"
+            />
           </el-table>
         </el-main>
 

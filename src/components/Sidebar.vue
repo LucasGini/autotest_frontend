@@ -1,9 +1,9 @@
 <script setup>
 import { useMenu } from '../store/syetem/menu.js'
-import { useTabs } from "@/store/tabs.js";
+import { useTabs } from "@/store/syetem/tabs.js";
 import router from "@/router/index.js";
 import {ElMessage} from "element-plus";
-import {onMounted, ref, reactive} from "vue";
+import {onMounted, ref} from "vue";
 import {AxiosError} from "axios";
 
 
@@ -37,10 +37,9 @@ const fetchMenuListData =  async () => {
 }
 
 
-
 const tabsStore = useTabs()
 // 选中的标签页，刷新页面不删除
-tabsStore.addTabs(JSON.parse(localStorage.getItem('selectedTab')))
+tabsStore.addTabs(JSON.parse(sessionStorage.getItem('selectedTab')))
 
 // 点击菜单，新增标签页
 const menuClick = (item) => {
@@ -48,62 +47,12 @@ const menuClick = (item) => {
   const knownPaths = router.getRoutes().map(route => route.path); // 所有已知的路径
   if (!knownPaths.includes(item.path)) {
     ElMessage.error('路由还未配置，跳转首页')
-    localStorage.removeItem('selectedTab')
+    sessionStorage.removeItem('selectedTab')
   } else {
     tabsStore.addTabs(item)
   }
 }
 
-// 通过路由递归查询菜单树
-const recursiveMenuSearch = (menuTree, path) => {
-  console.log(menuTree)
- for (const menu of menuTree) {
-    if (menu.path === path) {
-      return menu  //返回匹配的菜单
-    }
-    if (menu.children) {
-      // 递归搜索子菜单
-      const found = recursiveMenuSearch(menu.children, path)
-      console.log(found)
-      if (found) {
-        return found;  //返回匹配的菜单
-      }
-    }
-  }
-  return null  //未找到返回空
-}
-
-// 使用导航守卫重定向未知路径
-router.beforeEach(async (to, from, next) => {
-  const knownPaths = router.getRoutes().map(route => route.path); // 所有已知的路径
-  if (!knownPaths.includes(to.path)) {
-    tabsStore.updateEditableTabsValue('/')
-    localStorage.removeItem('selectedTab')
-    next('/');
-  } else {
-    menuStore.updateActivePath(to.path)
-    next(); // 继续路由导航
-    // 等待菜单树加载完成
-    let menuTree = await fetchMenuListData();
-    // 通过路由递归查询菜单树
-    const menu = recursiveMenuSearch(menuTree, to.path)
-    if (to.path === '/') {
-      // 选中首页标签
-      tabsStore.updateEditableTabsValue(to.path)
-      // 初始化标签
-      // tabsStore.initTabs()
-      // 删除本地种保存的标签页
-      localStorage.removeItem('selectedTab')
-    }
-    if (menu) {
-      // 如果查找到,添加标签页
-      tabsStore.addTabs(menu)
-    }
-  }
-});
-
-function handleSelect(key, keyPath) {
-}
 </script>
 
 <template>
@@ -183,7 +132,7 @@ function handleSelect(key, keyPath) {
 
 .sidebar {
   height: 100vh;
-  padding-top: 60px;
+  padding-top: 50px;
   position: relative;
 }
 
@@ -191,7 +140,7 @@ function handleSelect(key, keyPath) {
   color: white;
 }
 .menu-header {
-  height: 60px;
+  height: 50px;
   z-index: 100;
   background-color: #3a577e;
   display: flex;  /* 设置 Flexbox 布局 */
