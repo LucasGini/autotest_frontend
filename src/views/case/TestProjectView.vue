@@ -311,7 +311,7 @@ const remoteMethod = async (query) => {
             </el-table-column>
             <el-table-column :sortable="true" prop="project_name" label="项目名称" width="120px"/>
             <el-table-column :sortable="true" prop="responsible" label="责任人" width="100px"/>
-            <el-table-column prop="remark" label="备注" />
+            <el-table-column prop="remark" label="备注" width="400px"/>
             <el-table-column :sortable="true" prop="created_date" label="创建时间" width="200px"/>
             <el-table-column :sortable="true" prop="created_by" label="创建人" width="200px"/>
             <el-table-column :sortable="true" prop="updated_date" label="更新时间" width="200px"/>
