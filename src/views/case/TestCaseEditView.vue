@@ -3,7 +3,6 @@ import {useTestCase} from "@/store/case/testCase.js";
 import {reactive, ref} from "vue";
 import {createProject, updateProject} from "@/service/case/testProjectService.js";
 import {ElMessage} from "element-plus";
-import {ArrowLeft} from "@element-plus/icons-vue";
 import {useProject} from "@/store/case/project.js";
 import {isEmpty} from "element-plus/es/utils/index";
 
@@ -195,17 +194,27 @@ const priorityEnum = [
 
 <template>
   <el-card class="edit-case-card">
-    <el-container>
+    <el-container class="test-case-container">
       <el-header class="test-case-header">
         <div aria-label="page header" class="pageHeader">
           <el-page-header @back="onBack">
+            <template #extra>
+              <div class="flex items-center">
+                <el-button>清除</el-button>
+                <el-button type="primary" class="ml-2">保存</el-button>
+              </div>
+            </template>
           </el-page-header>
         </div>
       </el-header>
       <el-main class="test-case-main">
         <el-main class="case-base-main">
+          <h1>
+            用例基础数据
+          </h1>
+          <el-divider border-style="solid" />
           <el-form :model="searchForm"
-                   class="search-form"
+                   class="case-base-form"
                    label-position="right"
                    label-width="auto"
                    size="default"
@@ -262,76 +271,137 @@ const priorityEnum = [
             <el-form-item label="路径">
               <el-input v-model="searchForm.path" placeholder="请输入路径" clearable/>
             </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="searchFormSubmit">查询</el-button>
-            </el-form-item>
           </el-form>
         </el-main>
         <el-main class="case-precondition-main">
+          <h1>
+            前置用例
+          </h1>
+          <el-divider border-style="solid" />
           <el-transfer
               v-model="value"
               filterable
               :filter-method="filterMethod"
               filter-placeholder="State Abbreviations"
               :data="data"
+              class="case-transfer"
           />
         </el-main>
       </el-main>
-    </el-container>
-    <el-container>
-      <el-main class="test-data-main">
+      <el-footer class="test-case-footer">
         <el-tabs
             v-model="activeName"
-
             class="test-data-tabs"
             @tab-click="handleClick"
+            type="card"
         >
-          <el-tab-pane label="User" name="first">User</el-tab-pane>
-          <el-tab-pane label="Config" name="second">Config</el-tab-pane>
-          <el-tab-pane label="Role" name="third">Role</el-tab-pane>
-          <el-tab-pane label="Task" name="fourth">Task</el-tab-pane>
-        </el-tabs>
+          <el-tab-pane label="Headers" name="headers">
 
-      </el-main>
+          </el-tab-pane>
+          <el-tab-pane label="Params" name="params">
+
+          </el-tab-pane>
+          <el-tab-pane label="Body" name="body">
+
+          </el-tab-pane>
+          <el-tab-pane label="断言规则" name="assertion">
+
+          </el-tab-pane>
+          <el-tab-pane label="取值逻辑" name="fetch">
+
+          </el-tab-pane>
+          <el-tab-pane label="依赖参数" name="dependent">
+
+          </el-tab-pane>
+        </el-tabs>
+      </el-footer>
     </el-container>
   </el-card>
 </template>
 
 <style scoped>
+.edit-case-card {}
+.test-case-container {
+}
+
+.pageHeader {
+  width: 100%;
+}
 .test-case-main {
   display: flex;
   justify-content: space-between;
-  height: 40vh;
+  height: 50vh;
   padding: 0;
+
 }
-.test-data-main {
+.test-case-footer {
   height: 40vh;
+  border: 1px solid var(--el-border-color);
+  border-top: 0;
+  padding: 0;
 }
 .test-data-tabs {
   width: 100%;
 }
 
+h1 {
+  font-size: 20px;
+  margin:0;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
 .test-case-header {
-  height: 30px;
+  height: 50px;
+  width: 100%;
+  display: flex;
+  place-items: center;
+  text-align: center;
+
 }
 .case-base-main {
   width: 50%;
   margin: 0;
+  border: 1px solid var(--el-border-color);
+  border-right: 0;
+  padding: 20px 0 0 0;
 }
 
 .case-precondition-main{
   width: 50%;
+  margin: 0;
+  border: 1px solid var(--el-border-color);
+  padding: 20px 0 0 0;
 }
-.search-form {
+.case-base-form {
   max-width: 100%;
   width: 100%;
-  display: block;
-  justify-content: space-around;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding-top: 60px;
 }
 
+.case-transfer {
+  max-width: 100%;
+  min-width: 700px;
+  width: 100%;
+  padding-top: 20px;
+  text-align: center;
+}
+
+
 .el-form-item {
-  margin-left: 150px;
   width: 300px;
 }
+.el-divider {
+  margin: 0;
+}
+.el-card {
+  --el-card-padding: 0 20px 20px ;
+}
+
 
 </style>
