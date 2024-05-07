@@ -98,7 +98,7 @@ const form = reactive({
 const generateData = () => {
   const data = []
   const states = [
-    'California',
+    'Californiasdfasdfasfasfasfasdfsdafasdfasdfasdfdfasdfasdf',
     'Illinois',
     'Maryland',
     'Texas',
@@ -286,7 +286,7 @@ const priorityEnum = [
           />
         </el-main>
       </el-main>
-      <el-footer class="test-case-footer">
+      <el-main class="test-case-footer">
         <el-tabs
             v-model="activeName"
             class="test-data-tabs"
@@ -312,7 +312,7 @@ const priorityEnum = [
 
           </el-tab-pane>
         </el-tabs>
-      </el-footer>
+      </el-main>
     </el-container>
   </el-card>
 </template>
@@ -337,9 +337,12 @@ const priorityEnum = [
   border: 1px solid var(--el-border-color);
   border-top: 0;
   padding: 0;
+  width: 100%;
+  min-width: 1500px;
 }
 .test-data-tabs {
   width: 100%;
+  min-width: 1500px;
 }
 
 h1 {
@@ -360,18 +363,20 @@ h1 {
 
 }
 .case-base-main {
-  width: 50%;
+  width: 20%;
   margin: 0;
   border: 1px solid var(--el-border-color);
   border-right: 0;
   padding: 20px 0 0 0;
+  min-width: 500px;
 }
 
-.case-precondition-main{
+.case-precondition-main {
   width: 50%;
   margin: 0;
   border: 1px solid var(--el-border-color);
   padding: 20px 0 0 0;
+  min-width: 1000px;
 }
 .case-base-form {
   max-width: 100%;
@@ -384,12 +389,18 @@ h1 {
 
 .case-transfer {
   max-width: 100%;
-  min-width: 700px;
   width: 100%;
   padding-top: 20px;
   text-align: center;
+  --el-transfer-panel-width: 400px;
+  --el-checkbox-font-size: 20px;
+  --el-checkbox-input-height: 20px;
+  --el-checkbox-input-width:20px
 }
 
+:deep(.el-checkbox.el-checkbox--small .el-checkbox__label) {
+  font-size: 20px;
+}
 
 .el-form-item {
   width: 300px;
