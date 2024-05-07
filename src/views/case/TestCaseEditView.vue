@@ -212,7 +212,6 @@ const priorityEnum = [
           <h1>
             用例基础数据
           </h1>
-          <el-divider border-style="solid" />
           <el-form :model="searchForm"
                    class="case-base-form"
                    label-position="right"
@@ -277,7 +276,6 @@ const priorityEnum = [
           <h1>
             前置用例
           </h1>
-          <el-divider border-style="solid" />
           <el-transfer
               v-model="value"
               filterable
