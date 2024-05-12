@@ -75,7 +75,6 @@ const menuClick = (item) => {
           :default-active="menuStore.activePath"
           class="el-menu-vertical-demo"
           :collapse="menuStore.isCollapse"
-          @select="handleSelect"
           background-color="#304156"
           text-color="#bfcbd9"
           active-text-color="#409EFF"

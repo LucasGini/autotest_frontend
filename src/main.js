@@ -7,6 +7,8 @@ import router from './router'
 import pinia from "@/store/index.js";
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import "@/styles/index.css"
+import "jsoneditor"
+import JsonEditorVue from 'json-editor-vue3'
 
 const app = createApp(App)
 // 引入element-plus
@@ -19,4 +21,5 @@ app.use(pinia)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
+app.use(JsonEditorVue)
 app.mount('#app')
