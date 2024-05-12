@@ -12,6 +12,8 @@
     "@element-plus/icons-vue": "^2.3.1",
     "axios": "^1.6.8",
     "element-plus": "^2.6.3",
+    "json-editor-vue3": "^1.1.1",
+    "jsoneditor": "^10.0.3",
     "pinia": "^2.1.7",
     "unplugin-auto-import": "^0.17.5",
     "unplugin-vue-components": "^0.26.0",
