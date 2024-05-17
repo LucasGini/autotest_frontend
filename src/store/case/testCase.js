@@ -7,11 +7,17 @@ export const useTestCase = defineStore('testCase', () => {
 
     // 测试数据
     const testData = reactive({
+        // 请求头
         header: {},
+        // 请求参数
         param: {},
+        // 断言规则
         assertion: [],
+        // 请求体
         body: {},
+        // 依赖参数
         dependent: {},
+        // 取值规则
         fetch: [],
     })
 
@@ -20,6 +26,20 @@ export const useTestCase = defineStore('testCase', () => {
 
     // 测试用例详情
     const testCaseInfo = reactive({
+        id: null,
+        // 前置用例
+        precondition: [],
+        // 用例名称
+        caseName: '',
+        // 优先级
+        priority: 1,
+        // 请求方法
+        method: 0,
+        // 请求路径
+        path: '',
+        // 所属项目
+        project: {},
+        // 请求数据
         data: testData
     })
 
@@ -38,7 +58,13 @@ export const useTestCase = defineStore('testCase', () => {
         const response = await getTestCaseInfo(caseId)
         const responseData = response.data.data
         if (responseData) {
-            testCaseInfo.value = responseData
+            testCaseInfo.id = responseData.id
+            testCaseInfo.precondition = responseData.precondition
+            testCaseInfo.caseName = responseData.case_name
+            testCaseInfo.priority = responseData.priority
+            testCaseInfo.method = responseData.method
+            testCaseInfo.path = responseData.path
+            testCaseInfo.project = responseData.project
             if (responseData.header) {
                 testCaseInfo.data.header = responseData.header
             }
