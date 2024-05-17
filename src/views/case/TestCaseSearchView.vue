@@ -182,13 +182,10 @@ const handleCreateButtonClick = () => {
 }
 
 // 双击列表数据
-const handleRowDblclick = (row, column, event) => {
+const handleRowDblclick = async (row, column, event) => {
   if (!isEmpty(row)) {
-    // 显示修改的保存按钮
-    console.log(row)
-    console.log(column)
-    console.log(event)
     // 打开编辑对话框
+    await testCaseStore.setTestCaseInfo(row.id)
     testCaseStore.openTestCaseEditCard()
   }
 }

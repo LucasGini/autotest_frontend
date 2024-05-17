@@ -10,6 +10,7 @@ const { emit } = getCurrentInstance()
 console.log('props',props.data)
 
 const tableData = reactive(props.data)
+
 const handleAddRow = (index, row) => {
   tableData.push({key:'', value: ''})
 }
@@ -50,7 +51,7 @@ watch(tableData, (newValue) => {
           <el-input v-model="scope.row.value"></el-input>
         </template>
       </el-table-column>
-      <el-table-column label="Operations" width="100px">
+      <el-table-column label="操作" width="100px">
         <template #default="scope">
           <el-button size="small" type="primary" @click="handleAddRow(scope.$index, scope.row)">
             +

@@ -1,15 +1,18 @@
 <script setup>
 import {useTestCase} from "@/store/case/testCase.js";
-import {reactive, ref} from "vue";
+import {reactive, ref, onMounted} from "vue";
 import {createProject, updateProject} from "@/service/case/testProjectService.js";
 import {ElMessage} from "element-plus";
 import {useProject} from "@/store/case/project.js";
 import {isEmpty} from "element-plus/es/utils/index";
 import JsonEditorVue from "json-editor-vue3";
 import KeyValueEditor from "@/components/KeyValueEditor.vue";
+import AssertEditor from "@/components/AssertEditor.vue";
 
 
 const testCaseStore = useTestCase()
+
+const testCaseInfo = ref(testCaseStore.testCaseInfo)
 
 // 新增或修改的表单
 const projectEditForm = reactive({
@@ -31,108 +34,14 @@ let  projectEditFormRules = ref({
   ]
 })
 
-// 控制新增保存按钮和修改保存按钮显示
-// true显示新增的保存按钮， false 显示编辑的保存按钮
-const isCreateOrUpdateMode = ref(true)
 
-
-
-// 新增测试环境数据
-const createFormSubmit = async () => {
-  try {
-    // 验证表单
-    await projectEditFormRef.value.validate().catch(err => {
-      throw '表单校验失败'
-    })
-    const response = await createProject(projectEditForm)
-    if (response.status === 201 && response.data.msg === 'OK') {
-      ElMessage.success('新增成功')
-      showEditDialog.value = false
-      // 重新获取数据
-      await fetchTestcaseList()
-    } else {
-      ElMessage.error('新增失败')
-    }
-  } catch (error) {
-    ElMessage.error(error)
-  }
-}
-
-
-// 修改测试环境数据
-const updateFormSubmit = async () => {
-  try {
-    // 验证表单
-    await projectEditFormRef.value.validate().catch(err => {
-      throw '表单校验失败'
-    })
-    const response = await updateProject(projectEditForm.id, projectEditForm)
-    if (response.status === 200 && response.data.msg === 'OK') {
-      ElMessage.success('修改成功')
-      showEditDialog.value = false
-      // 重新获取数据
-      await fetchTestcaseList()
-    } else {
-      ElMessage.error('修改失败')
-    }
-  } catch (error) {
-    ElMessage.error(error)
-  }
-}
 
 // 点击返回按钮处理
 const onBack = () => {
   testCaseStore.openTestCaseSearchCard()
 }
 
-const form = reactive({
-  name: '',
-  region: '',
-  date1: '',
-  date2: '',
-  delivery: false,
-  type: [],
-  resource: '',
-  desc: '',
-})
 
-
-
-const generateData = () => {
-  const data = []
-  const states = [
-    'Californiasdfasdfasfasfasfasdfsdafasdfasdfasdfdfasdfasdf',
-    'Illinois',
-    'Maryland',
-    'Texas',
-    'Florida',
-    'Colorado',
-    'Connecticut ',
-  ]
-  const initials = ['CA', 'IL', 'MD', 'TX', 'FL', 'CO', 'CT']
-  states.forEach((city, index) => {
-    data.push({
-      label: city,
-      key: index,
-      initial: initials[index],
-    })
-  })
-  return data
-}
-
-const data = ref(generateData())
-const value = ref([])
-
-const filterMethod = (query, item) => {
-  return item.initial.toLowerCase().includes(query.toLowerCase())
-}
-
-
-const activeName = ref('first')
-
-const handleClick = (tab, event) => {
-  console.log(tab, event)
-}
 
 // 搜索项目列表
 const searchProjectList = ref([])
@@ -166,13 +75,7 @@ const remoteMethod = async (query) => {
 }
 
 // 查询表单
-const searchForm = ref({
-  caseName: '',
-  project: '',
-  priority: null,
-  method: null,
-  path: ''
-})
+const caseBaseForm = ref(testCaseInfo)
 
 // 枚举
 // 请求方法枚举
@@ -210,10 +113,49 @@ const handleHeaderKeyValueUpdate = (updateData) => {
   console.log(headerKeyValue)
 }
 
-// 处理zi组件数据变更事件
+// 处理子组件数据变更事件
 const handleParamsKeyValueUpdate = (updateData) => {
   paramsKeyValue.value = updateData
   console.log(headerKeyValue)
+}
+
+// 断言规则数据
+const assertData =  ref([{
+  assert: '',
+  path: '',
+  value: '',
+  types: '',
+  meg: ''
+}])
+
+// 处理子组件数据变更事件
+const handleAssertDataUpdate = (updateData) => {
+  assertData.value = updateData
+  console.log(assertData)
+}
+
+// 取值规则键值对
+const fetchKeyValue = ref([{
+  key: '',
+  value: ''
+}])
+
+// 处理子组件数据变更事件
+const handleFetchKeyValueUpdate = (updateData) => {
+  paramsKeyValue.value = updateData
+  console.log(headerKeyValue)
+}
+
+// 依赖参数键值对
+const dependentKeyValue = ref([{
+  key: '',
+  value: ''
+}])
+
+// 处理子组件数据变更事件
+const handleDependentKeyValueUpdate = (updateData) => {
+  dependentKeyValue.value = updateData
+  console.log(dependentKeyValue)
 }
 
 </script>
@@ -240,18 +182,18 @@ const handleParamsKeyValueUpdate = (updateData) => {
             <h1>
               用例基础数据
             </h1>
-            <el-form :model="searchForm"
+            <el-form :model="caseBaseForm"
                      class="case-base-form"
                      label-position="right"
                      label-width="auto"
                      size="default"
             >
               <el-form-item label="用例名称">
-                <el-input v-model="searchForm.caseName" placeholder="请输入用例名称" clearable/>
+                <el-input v-model="caseBaseForm.caseName" placeholder="请输入用例名称" clearable/>
               </el-form-item>
               <el-form-item label="所属项目" prop="responsible">
                 <el-select
-                    v-model="searchForm.project"
+                    v-model="caseBaseForm.project.project_name"
                     filterable
                     remote
                     clearable
@@ -271,7 +213,7 @@ const handleParamsKeyValueUpdate = (updateData) => {
               </el-form-item>
               <el-form-item label="优先级" prop="priority">
                 <el-select
-                    v-model="searchForm.priority"
+                    v-model="caseBaseForm.priority"
                     clearable
                     placeholder="请选择优先级"
                 >
@@ -284,7 +226,7 @@ const handleParamsKeyValueUpdate = (updateData) => {
               </el-form-item>
               <el-form-item label="请求方法" prop="method">
                 <el-select
-                    v-model="searchForm.method"
+                    v-model="caseBaseForm.method"
                     clearable
                     placeholder="请选择请求方法"
                 >
@@ -296,7 +238,7 @@ const handleParamsKeyValueUpdate = (updateData) => {
                 </el-select>
               </el-form-item>
               <el-form-item label="路径">
-                <el-input v-model="searchForm.path" placeholder="请输入路径" clearable/>
+                <el-input v-model="caseBaseForm.path" placeholder="请输入路径" clearable/>
               </el-form-item>
             </el-form>
           </el-main>
@@ -325,7 +267,7 @@ const handleParamsKeyValueUpdate = (updateData) => {
               <KeyValueEditor :data="headerKeyValue" @update:data="handleHeaderKeyValueUpdate"></KeyValueEditor>
             </el-tab-pane>
             <el-tab-pane label="Params" name="params">
-              <KeyValueEditor :data="paramsKeyValue" @update:data="handleParamsKeyValueUpdate"></KeyValueEditor>
+              <KeyValueEditor :data="paramsKeyValue" @update:data="handleParamsKeyValueUpdate" />
             </el-tab-pane>
             <el-tab-pane label="Body" name="body">
               <JsonEditorVue class="json-editor" language="zh">
@@ -333,10 +275,13 @@ const handleParamsKeyValueUpdate = (updateData) => {
               </JsonEditorVue>
             </el-tab-pane>
             <el-tab-pane label="断言规则" name="assertion">
+              <AssertEditor :data="assertData" @update:data="handleAssertDataUpdate"/>
             </el-tab-pane>
-            <el-tab-pane label="取值逻辑" name="fetch">
+            <el-tab-pane label="取值规则" name="fetch">
+              <KeyValueEditor :data="fetchKeyValue" @update:data="handleFetchKeyValueUpdate" />
             </el-tab-pane>
             <el-tab-pane label="依赖参数" name="dependent">
+              <KeyValueEditor :data="dependentKeyValue" @update:data="handleDependentKeyValueUpdate" />
             </el-tab-pane>
           </el-tabs>
         </div>
