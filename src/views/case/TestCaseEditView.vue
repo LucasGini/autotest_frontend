@@ -1,6 +1,6 @@
 <script setup>
 import {useTestCase} from "@/store/case/testCase.js";
-import {reactive, ref, onMounted} from "vue";
+import {reactive, ref, watchEffect} from "vue";
 import {createProject, updateProject} from "@/service/case/testProjectService.js";
 import {ElMessage} from "element-plus";
 import {useProject} from "@/store/case/project.js";
@@ -9,32 +9,37 @@ import JsonEditorVue from "json-editor-vue3";
 import KeyValueEditor from "@/components/KeyValueEditor.vue";
 import AssertEditor from "@/components/AssertEditor.vue";
 
-
+// 测试用例状态管理工具
 const testCaseStore = useTestCase()
 
-const testCaseInfo = ref(testCaseStore.testCaseInfo)
+//测试项目状态管理工具
+const projectStore = useProject()
 
-// 新增或修改的表单
-const projectEditForm = reactive({
-  id: '',
-  project_name: '',
-  responsible: null,
-  remark: ''
-})
+// 测试用例详情
+const testCaseInfo =  reactive(testCaseStore.testCaseInfo)
 
-const projectEditFormRef = ref()
+// 对象转键值对
+const toKeyValuePair = (obj) => {
+  const output = []
+  if (!isEmpty(obj)) {
+    Object.keys(obj).forEach(k => {
+      output.push({key: k, value: obj[k]})
+    })
+    return output
+  }
+  return [{key: '', value: ''}]
+}
 
-// 表单验证规则
-let  projectEditFormRules = ref({
-  project_name: [
-    {required: true, message: '项目名称不能为空', trigger: 'blur'},
-  ],
-  responsible: [
-    {required: true, message: '负责人不能为空', trigger: 'blur'},
-  ]
-})
-
-
+// 键值对转对象
+const toObject = (keyValueArray) => {
+  const obj = {}
+  keyValueArray.forEach(item => {
+    if (item.key !== '') {
+      obj[item.key] = item.value
+    }
+  })
+  return obj
+}
 
 // 点击返回按钮处理
 const onBack = () => {
@@ -42,19 +47,11 @@ const onBack = () => {
 }
 
 
+// 远程搜索加载状态
+const remoteSearchLoading = ref(false)
 
 // 搜索项目列表
 const searchProjectList = ref([])
-
-// 项目搜索框失去焦点处理方法
-const handleResponsibleBlur = () => {
-  searchProjectList.value = []
-}
-
-const projectStore = useProject()
-
-// 远程搜索加载状态
-const remoteSearchLoading = ref(false)
 
 // 远程搜索项目
 const remoteMethod = async (query) => {
@@ -74,8 +71,14 @@ const remoteMethod = async (query) => {
   }
 }
 
-// 查询表单
-const caseBaseForm = ref(testCaseInfo)
+// 项目搜索框失去焦点处理方法
+const handleResponsibleBlur = () => {
+  searchProjectList.value = []
+}
+
+// 用例基础数据表单
+const caseBaseForm = reactive(testCaseInfo)
+
 
 // 枚举
 // 请求方法枚举
@@ -95,27 +98,27 @@ const priorityEnum = [
   {label: 4, value:4},
 ]
 
-// header键值对
-const headerKeyValue = ref([{
-  key: '',
-  value: ''
-}])
+// 标签页默认选中
+const editableTabsValue = ref('headers')
+
+// 初始化 headerKeyValue
+const headerKeyValue = ref(toKeyValuePair(testCaseInfo.header))
+
 
 // params键值对
-const paramsKeyValue = ref([{
-  key: '',
-  value: ''
-}])
+const paramsKeyValue = ref(toKeyValuePair(testCaseInfo.param))
 
 // 处理子组件数据变更事件
 const handleHeaderKeyValueUpdate = (updateData) => {
   headerKeyValue.value = updateData
+  testCaseInfo.header = toObject(updateData)
   console.log(headerKeyValue)
 }
 
 // 处理子组件数据变更事件
 const handleParamsKeyValueUpdate = (updateData) => {
   paramsKeyValue.value = updateData
+  testCaseInfo.param = toObject(updateData)
   console.log(headerKeyValue)
 }
 
@@ -135,14 +138,12 @@ const handleAssertDataUpdate = (updateData) => {
 }
 
 // 取值规则键值对
-const fetchKeyValue = ref([{
-  key: '',
-  value: ''
-}])
+const fetchKeyValue = ref(toKeyValuePair(testCaseInfo.fetch))
 
 // 处理子组件数据变更事件
 const handleFetchKeyValueUpdate = (updateData) => {
   paramsKeyValue.value = updateData
+  testCaseInfo.fetch = toObject(updateData)
   console.log(headerKeyValue)
 }
 
@@ -158,6 +159,16 @@ const handleDependentKeyValueUpdate = (updateData) => {
   console.log(dependentKeyValue)
 }
 
+const handleSave = () => {
+  console.log(testCaseStore.testCaseInfo)
+  console.log(testCaseInfo)
+  console.log(headerKeyValue)
+}
+
+const handleSelectChange = () => {
+  console.log('选择变更')
+}
+
 </script>
 
 <template>
@@ -169,7 +180,7 @@ const handleDependentKeyValueUpdate = (updateData) => {
             <template #extra>
               <div class="flex items-center">
                 <el-button>清除</el-button>
-                <el-button type="primary" class="ml-2">保存</el-button>
+                <el-button type="primary" class="ml-2" @click="handleSave">保存</el-button>
               </div>
             </template>
           </el-page-header>
@@ -193,7 +204,7 @@ const handleDependentKeyValueUpdate = (updateData) => {
               </el-form-item>
               <el-form-item label="所属项目" prop="responsible">
                 <el-select
-                    v-model="caseBaseForm.project.project_name"
+                    v-model="caseBaseForm.projectName"
                     filterable
                     remote
                     clearable
@@ -202,6 +213,7 @@ const handleDependentKeyValueUpdate = (updateData) => {
                     :remote-method="remoteMethod"
                     @blur="handleResponsibleBlur"
                     :loading="remoteSearchLoading"
+                    @change="handleSelectChange"
                 >
                   <el-option
                       v-for="item in searchProjectList"
@@ -258,7 +270,7 @@ const handleDependentKeyValueUpdate = (updateData) => {
         </div>
         <div class="test-case-footer">
           <el-tabs
-              v-model="activeName"
+              v-model="editableTabsValue"
               class="test-data-tabs"
               @tab-click="handleClick"
               type="card"

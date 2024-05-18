@@ -15,10 +15,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="query-container" v-show="!testCaseStore.showSearchEditCard">
+  <div class="query-container" v-if="!testCaseStore.showSearchEditCard">
     <TestCaseSearchView/>
   </div>
-  <div class="edit-container" v-show="testCaseStore.showSearchEditCard">
+  <div class="edit-container" v-if="testCaseStore.showSearchEditCard">
     <TestCaseEditView/>
   </div>
 
