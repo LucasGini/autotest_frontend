@@ -291,7 +291,7 @@ const handleRowDblclick = async (row, column, event) => {
             <el-table-column :sortable="true" prop="priority" label="优先级" width="100px" :show-overflow-tooltip="true"/>
             <el-table-column :sortable="true" prop="method" label="请求方法" width="100px" :formatter="methodFormatter" :show-overflow-tooltip="true"/>
             <el-table-column :sortable="true" prop="path" label="路径" width="300px" :show-overflow-tooltip="true"/>
-            <el-table-column :sortable="true" prop="precondition" label="前置请求" width="300px" :show-overflow-tooltip="true"/>
+            <el-table-column prop="precondition" label="前置请求" width="300px" :show-overflow-tooltip="true"/>
             <el-table-column :sortable="true" prop="created_date" label="创建时间" width="200px" :show-overflow-tooltip="true"/>
             <el-table-column :sortable="true" prop="created_by" label="创建人" width="200px" :show-overflow-tooltip="true"/>
             <el-table-column :sortable="true" prop="updated_date" label="更新时间" width="200px" :show-overflow-tooltip="true"/>

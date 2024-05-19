@@ -6,6 +6,7 @@ import {ElMessage} from "element-plus";
 import {useProject} from "@/store/case/project.js";
 import {isEmpty} from "element-plus/es/utils/index";
 import JsonEditorVue from "json-editor-vue3";
+import {toObject, toKeyValuePair} from "@/utils/dataFormatConversion.js"
 import KeyValueEditor from "@/components/KeyValueEditor.vue";
 import AssertEditor from "@/components/AssertEditor.vue";
 
@@ -18,28 +19,6 @@ const projectStore = useProject()
 // 测试用例详情
 const testCaseInfo =  reactive(testCaseStore.testCaseInfo)
 
-// 对象转键值对
-const toKeyValuePair = (obj) => {
-  const output = []
-  if (!isEmpty(obj)) {
-    Object.keys(obj).forEach(k => {
-      output.push({key: k, value: obj[k]})
-    })
-    return output
-  }
-  return [{key: '', value: ''}]
-}
-
-// 键值对转对象
-const toObject = (keyValueArray) => {
-  const obj = {}
-  keyValueArray.forEach(item => {
-    if (item.key !== '') {
-      obj[item.key] = item.value
-    }
-  })
-  return obj
-}
 
 // 点击返回按钮处理
 const onBack = () => {
@@ -77,7 +56,15 @@ const handleResponsibleBlur = () => {
 }
 
 // 用例基础数据表单
-const caseBaseForm = reactive(testCaseInfo)
+const caseBaseForm = reactive({
+  id: testCaseInfo.id,
+  caseName: testCaseInfo.caseName,
+  projectName: testCaseInfo.projectName,
+  projectId: testCaseInfo.projectId,
+  priority: testCaseInfo.priority,
+  method: testCaseInfo.method,
+  path: testCaseInfo.path,
+})
 
 
 // 枚举
@@ -148,14 +135,12 @@ const handleFetchKeyValueUpdate = (updateData) => {
 }
 
 // 依赖参数键值对
-const dependentKeyValue = ref([{
-  key: '',
-  value: ''
-}])
+const dependentKeyValue = ref(toKeyValuePair(testCaseInfo.dependent))
 
 // 处理子组件数据变更事件
 const handleDependentKeyValueUpdate = (updateData) => {
   dependentKeyValue.value = updateData
+  testCaseInfo.dependent = toObject(updateData)
   console.log(dependentKeyValue)
 }
 
@@ -165,8 +150,9 @@ const handleSave = () => {
   console.log(headerKeyValue)
 }
 
-const handleSelectChange = () => {
-  console.log('选择变更')
+const handleSelectChange = (data) => {
+  console.log('选择变更', data)
+  testCaseInfo.projectId = data
 }
 
 </script>

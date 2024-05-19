@@ -22,8 +22,6 @@ export const useTestCase = defineStore('testCase', () => {
         method: 0,
         // 请求路径
         path: '',
-        // 所属项目
-        project: null,
         // 项目ID
         projectId: null,
         // 项目名称
@@ -39,7 +37,7 @@ export const useTestCase = defineStore('testCase', () => {
         // 依赖参数
         dependent: {},
         // 取值规则
-        fetch: [],
+        fetch: {},
     })
 
     // 查询编辑页面显示状态
