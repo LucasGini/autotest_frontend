@@ -1,13 +1,13 @@
 <script setup>
-import {useTestCase} from "@/store/case/testCase.js";
+import {useTestCaseStore} from "@/store/case/testCase.js";
 import {ref, onMounted, reactive} from "vue";
 import {AxiosError} from "axios";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {isEmpty} from "element-plus/es/utils/index";
-import {useProject} from "@/store/case/project.js";
+import {useProjectStore} from "@/store/case/project.js";
 import {deleteTestCase} from "@/service/case/testCaseService.js";
 
-const testCaseStore = useTestCase()
+const testCaseStore = useTestCaseStore()
 
 // 页面加载刷新数据
 onMounted( async () => {
@@ -154,7 +154,7 @@ const handleResponsibleBlur = () => {
   searchProjectList.value = []
 }
 
-const projectStore = useProject()
+const projectStore = useProjectStore()
 
 // 远程搜索项目
 const remoteMethod = async (query) => {

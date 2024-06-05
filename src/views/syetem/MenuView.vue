@@ -1,11 +1,11 @@
 <script setup>
-import {useMenu} from "@/store/syetem/menu.js";
+import {useMenuStore} from "@/store/syetem/menu.js";
 import {reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
 import {isEmpty} from "element-plus/es/utils/index";
 import {createMenu, deleteMenu, updateMenu} from "@/service/basic/menuService.js";
 
-const menuStore = useMenu()
+const menuStore = useMenuStore()
 
 let menuList = menuStore.menuList
 

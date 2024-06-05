@@ -2,7 +2,7 @@ import {defineStore} from "pinia";
 import {getTestEnvInfo, getTestEnvList} from "@/service/basic/testEnvService.js";
 import {ref} from "vue";
 
-export const useTestEnv = defineStore("testEnv", () => {
+export const useTestEnvStore = defineStore("testEnv", () => {
 
     // 测试环境列表
     let testEnvList = ref([])

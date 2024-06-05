@@ -1,5 +1,5 @@
 <script setup>
-import {useTestEnv} from "@/store/syetem/testEnv.js";
+import {useTestEnvStore} from "@/store/syetem/testEnv.js";
 import {onMounted, ref, reactive} from "vue";
 import {isEmpty} from "element-plus/es/utils/index";
 import {ElMessage, ElMessageBox} from "element-plus";
@@ -7,7 +7,7 @@ import {AxiosError} from "axios";
 import {createTestEnv, deleteTestEnv, updateTestEnv} from "@/service/basic/testEnvService.js";
 
 
-let testEnvStore = useTestEnv();
+let testEnvStore = useTestEnvStore();
 let testEnvList = ref([]);
 
 // 分页参数

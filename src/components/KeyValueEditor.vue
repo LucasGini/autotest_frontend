@@ -1,5 +1,5 @@
 <script setup>
-import {reactive, defineProps, getCurrentInstance, watch} from "vue";
+import {reactive, getCurrentInstance, watch} from "vue";
 import {ElMessage} from "element-plus";
 
 const props = defineProps(['data'])

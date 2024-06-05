@@ -1,9 +1,8 @@
 <script setup>
-import {useTestCase} from "@/store/case/testCase.js";
-import {reactive, ref, watchEffect} from "vue";
-import {createProject, updateProject} from "@/service/case/testProjectService.js";
+import {useTestCaseStore} from "@/store/case/testCase.js";
+import {reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
-import {useProject} from "@/store/case/project.js";
+import {useProjectStore} from "@/store/case/project.js";
 import {isEmpty} from "element-plus/es/utils/index";
 import JsonEditorVue from "json-editor-vue3";
 import {toObject, toKeyValuePair} from "@/utils/dataFormatConversion.js"
@@ -11,10 +10,10 @@ import KeyValueEditor from "@/components/KeyValueEditor.vue";
 import AssertEditor from "@/components/AssertEditor.vue";
 
 // 测试用例状态管理工具
-const testCaseStore = useTestCase()
+const testCaseStore = useTestCaseStore()
 
 //测试项目状态管理工具
-const projectStore = useProject()
+const projectStore = useProjectStore()
 
 // 测试用例详情
 const testCaseInfo =  reactive(testCaseStore.testCaseInfo)

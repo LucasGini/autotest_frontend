@@ -2,7 +2,7 @@ import {defineStore} from "pinia";
 import {getAllMenu, getMenuInfo} from "@/service/basic/menuService.js";
 import {reactive, ref} from "vue";
 
-export const useMenu = defineStore('menu', () => {
+export const useMenuStore = defineStore('menu', () => {
     let menuList = reactive([])
     let menu = ref('')
     let isCollapse = ref(false)

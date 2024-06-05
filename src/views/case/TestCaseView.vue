@@ -1,10 +1,10 @@
 <script setup>
-import {useTestCase} from "@/store/case/testCase.js";
+import {useTestCaseStore} from "@/store/case/testCase.js";
 import TestCaseSearchView from "@/views/case/TestCaseSearchView.vue";
 import TestCaseEditView from "@/views/case/TestCaseEditView.vue";
 import {onMounted} from "vue";
 
-const testCaseStore = useTestCase()
+const testCaseStore = useTestCaseStore()
 
 onMounted(() => {
   testCaseStore.openTestCaseSearchCard()

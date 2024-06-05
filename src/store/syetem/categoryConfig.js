@@ -3,7 +3,7 @@ import {defineStore} from "pinia";
 import {ref} from "vue";
 
 
-export const useCategoryConfig = defineStore('categoryConfig', () => {
+export const useCategoryConfigStore = defineStore('categoryConfig', () => {
 
     // 类型配置树
     const categoryConfigTree = ref([])

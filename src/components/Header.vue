@@ -1,6 +1,6 @@
 <script setup>
-import {useMenu} from '../store/syetem/menu.js'
-const menuStore = useMenu()
+import {useMenuStore} from '../store/syetem/menu.js'
+const menuStore = useMenuStore()
 
 
 

@@ -1,11 +1,10 @@
 <script setup>
 import {ref, onMounted, reactive} from "vue";
 import {createCategoryConfig, deleteCategoryConfig, updateCategoryConfig} from "@/service/basic/categoryConfigService.js";
-import {useCategoryConfig} from "@/store/syetem/categoryConfig.js";
+import {useCategoryConfigStore} from "@/store/syetem/categoryConfig.js";
 import {ElMessage, ElMessageBox} from "element-plus";
-import {createProject, deleteProject} from "@/service/case/testProjectService.js";
 
-const categoryConfigStore = useCategoryConfig()
+const categoryConfigStore = useCategoryConfigStore()
 // 类型配置树
 const categoryConfigTree = ref([])
 // 选择器列表

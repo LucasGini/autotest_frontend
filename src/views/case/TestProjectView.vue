@@ -1,13 +1,13 @@
 <script setup>
-import {useProject} from "@/store/case/project.js";
+import {useProjectStore} from "@/store/case/project.js";
 import {ref, onMounted, reactive} from "vue";
 import {AxiosError} from "axios";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {createProject, deleteProject, updateProject} from "@/service/case/testProjectService.js";
 import {isEmpty} from "element-plus/es/utils/index";
-import {useUser} from "@/store/user/user.js"
+import {useUserStore} from "@/store/user/user.js"
 
-const projectStore = useProject();
+const projectStore = useProjectStore();
 
 // 页面加载刷新数据
 onMounted( async () => {
@@ -207,7 +207,7 @@ const handleDeleteProject = async (data) => {
 // 远程搜索加载状态
 const remoteSearchLoading = ref(false)
 
-const userStore = useUser()
+const userStore = useUserStore()
 
 // 用户列表
 const userList = ref([])

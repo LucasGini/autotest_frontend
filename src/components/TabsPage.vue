@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { useTabs } from '@/store/syetem/tabs';
+import { useTabsStore } from '@/store/syetem/tabs';
 import router from "@/router/index.js";
 
 
-const tabsStore = useTabs()
+const tabsStore = useTabsStore()
 
 // 处理新增或者删除标签的事件
 function handleTabsEdit(targetName, action) {

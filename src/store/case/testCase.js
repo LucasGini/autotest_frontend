@@ -1,10 +1,9 @@
 import {defineStore} from "pinia";
 import {reactive, ref} from "vue";
-import {getTestCaseList, updateTestCase, deleteTestCase, createTestCase, getTestCaseInfo} from "@/service/case/testCaseService.js";
-import {isEmpty} from "element-plus/es/utils/index";
+import {getTestCaseList, getTestCaseInfo} from "@/service/case/testCaseService.js";
 
 
-export const useTestCase = defineStore('testCase', () => {
+export const useTestCaseStore = defineStore('testCase', () => {
 
     // 测试用例列表
     const testCaseList = ref([])

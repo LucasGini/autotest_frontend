@@ -1,13 +1,13 @@
 <script setup>
-import { useMenu } from '../store/syetem/menu.js'
-import { useTabs } from "@/store/syetem/tabs.js";
+import { useMenuStore } from '../store/syetem/menu.js'
+import { useTabsStore } from "@/store/syetem/tabs.js";
 import router from "@/router/index.js";
 import {ElMessage} from "element-plus";
 import {onMounted, ref} from "vue";
 import {AxiosError} from "axios";
 
 
-const menuStore = useMenu()
+const menuStore = useMenuStore()
 let menuList = ref([]); // 创建本地 menuList
 
 onMounted( async () => {
@@ -37,7 +37,7 @@ const fetchMenuListData =  async () => {
 }
 
 
-const tabsStore = useTabs()
+const tabsStore = useTabsStore()
 // 选中的标签页，刷新页面不删除
 tabsStore.addTabs(JSON.parse(sessionStorage.getItem('selectedTab')))
 
