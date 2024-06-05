@@ -1,9 +1,9 @@
 <script setup>
 import Sidebar from "@/components/Sidebar.vue";
 import Header from "@/components/Header.vue";
-import {useMenu} from "@/store/syetem/menu.js";
+import {useMenuStore} from "@/store/syetem/menu.js";
 import TabsPage from "@/components/TabsPage.vue";
-const menuStore = useMenu();
+const menuStore = useMenuStore();
 </script>
 
 <template>
