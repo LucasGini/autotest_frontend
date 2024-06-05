@@ -3,8 +3,8 @@ import HomePage from "@/components/HomePage.vue";
 import systemRoutes from "@/router/syetemRouter.js";
 import caseRoutes from "@/router/caseRouter.js"
 import pinia from "@/store/index.js";
-import {useTabs} from "@/store/syetem/tabs.js";
-import {useMenu} from "@/store/syetem/menu.js";
+import {useTabsStore} from "@/store/syetem/tabs.js";
+import {useMenuStore} from "@/store/syetem/menu.js";
 
 
 const routes = [
@@ -24,8 +24,8 @@ const router = createRouter({
     routes,
 })
 
-const tabsStore = useTabs(pinia)
-const menuStore = useMenu(pinia)
+const tabsStore = useTabsStore(pinia)
+const menuStore = useMenuStore(pinia)
 
 
 // 通过路由递归查询菜单树
