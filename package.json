@@ -17,6 +17,7 @@
     "pinia": "^2.1.7",
     "unplugin-auto-import": "^0.17.5",
     "unplugin-vue-components": "^0.26.0",
+    "vite-plugin-vue-setup-extend": "^0.4.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },

@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 import {reactive, ref} from "vue";
 
-export const useTabs = defineStore('tabs', () => {
+export const useTabsStore = defineStore('tabs', () => {
 
     // 标签列表
     let editableTabs = reactive([{

@@ -3,7 +3,7 @@ import {getUserList} from "@/service/user/userService.js";
 import {ref} from "vue";
 
 
-export const useUser = defineStore('user', () => {
+export const useUserStore = defineStore('user', () => {
 
     // 用户列表
     const userList = ref()

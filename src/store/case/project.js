@@ -2,7 +2,7 @@ import {defineStore} from "pinia";
 import {ref} from "vue";
 import {getProjectList, getProjectInfo, searchProject} from "@/service/case/testProjectService.js";
 
-export const useProject = defineStore('project', () => {
+export const useProjectStore = defineStore('project', () => {
 
     // 项目列表
     const projectList = ref([])

@@ -1,5 +1,5 @@
 <script setup>
-import {reactive, defineProps, ref, watch, getCurrentInstance} from "vue";
+import {reactive, ref, watch, getCurrentInstance} from "vue";
 import {ElMessage} from "element-plus";
 
 // 获取父组件传的值

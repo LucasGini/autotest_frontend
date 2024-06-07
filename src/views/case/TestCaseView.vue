@@ -1,13 +1,16 @@
 <script setup>
-import {useTestCase} from "@/store/case/testCase.js";
+import {useTestCaseStore} from "@/store/case/testCase.js";
 import TestCaseSearchView from "@/views/case/TestCaseSearchView.vue";
-import TestCaseEditView from "@/views/case/TestCaseEditView.vue";
 import {onMounted} from "vue";
+import {useRoute} from "vue-router";
 
-const testCaseStore = useTestCase()
+const testCaseStore = useTestCaseStore()
 
 onMounted(() => {
-  testCaseStore.openTestCaseSearchCard()
+  let route = useRoute()
+  if (route.path === '/case/testCase') {
+    testCaseStore.openTestCaseSearchCard()
+  }
 })
 
 
@@ -19,7 +22,7 @@ onMounted(() => {
     <TestCaseSearchView/>
   </div>
   <div class="edit-container" v-if="testCaseStore.showSearchEditCard">
-    <TestCaseEditView/>
+    <router-view></router-view>
   </div>
 
 </template>

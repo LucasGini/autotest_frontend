@@ -1,10 +1,9 @@
 import {defineStore} from "pinia";
 import {reactive, ref} from "vue";
-import {getTestCaseList, updateTestCase, deleteTestCase, createTestCase, getTestCaseInfo} from "@/service/case/testCaseService.js";
-import {isEmpty} from "element-plus/es/utils/index";
+import {getTestCaseList, getTestCaseInfo} from "@/service/case/testCaseService.js";
 
 
-export const useTestCase = defineStore('testCase', () => {
+export const useTestCaseStore = defineStore('testCase', () => {
 
     // 测试用例列表
     const testCaseList = ref([])
@@ -22,8 +21,6 @@ export const useTestCase = defineStore('testCase', () => {
         method: 0,
         // 请求路径
         path: '',
-        // 所属项目
-        project: null,
         // 项目ID
         projectId: null,
         // 项目名称
@@ -39,11 +36,11 @@ export const useTestCase = defineStore('testCase', () => {
         // 依赖参数
         dependent: {},
         // 取值规则
-        fetch: [],
+        fetch: {},
     })
 
     // 查询编辑页面显示状态
-    const showSearchEditCard = ref(false)
+    const showSearchEditCard = ref(true)
 
     // 更新测试用例列表
     const setTestCaseList = async (config) => {
@@ -68,9 +65,7 @@ export const useTestCase = defineStore('testCase', () => {
                 testCaseInfo.projectId = responseData.project.id
                 testCaseInfo.projectName = responseData.project.project_name
             }
-            if (responseData.data.header){
-                testCaseInfo.header = responseData.data.header
-            }
+            testCaseInfo.header = responseData.data.header
             testCaseInfo.body = responseData.data.body
             testCaseInfo.param = responseData.data.param
             testCaseInfo.fetch = responseData.data.fetch

@@ -1,7 +1,7 @@
 <script setup>
-import { useTabs } from "@/store/syetem/tabs.js";
+import { useTabsStore } from "@/store/syetem/tabs.js";
 
-const tabsStore = useTabs()
+const tabsStore = useTabsStore()
 
 
 

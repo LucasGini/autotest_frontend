@@ -1,10 +1,10 @@
 import {createRouter, createWebHistory} from "vue-router";
-import HomePage from "@/components/HomePage.vue";
+import HomePage from "@/views/HomePage.vue";
 import systemRoutes from "@/router/syetemRouter.js";
 import caseRoutes from "@/router/caseRouter.js"
 import pinia from "@/store/index.js";
-import {useTabs} from "@/store/syetem/tabs.js";
-import {useMenu} from "@/store/syetem/menu.js";
+import {useTabsStore} from "@/store/syetem/tabs.js";
+import {useMenuStore} from "@/store/syetem/menu.js";
 
 
 const routes = [
@@ -20,12 +20,13 @@ const routes = [
 ];
 
 const router = createRouter({
+    // 路由器的工作模式
     history: createWebHistory(),
     routes,
 })
 
-const tabsStore = useTabs(pinia)
-const menuStore = useMenu(pinia)
+const tabsStore = useTabsStore(pinia)
+const menuStore = useMenuStore(pinia)
 
 
 // 通过路由递归查询菜单树
@@ -50,13 +51,13 @@ const recursiveMenuSearch = (menuTree, path) => {
 
 // 使用导航守卫重定向未知路径
 router.beforeEach(async (to, from, next) => {
-    const knownPaths = router.getRoutes().map(route => route.path); // 所有已知的路径
+    const knownPaths = router.getRoutes().map(route => route.path);
     if (!knownPaths.includes(to.path)) {
         tabsStore.updateEditableTabsValue('/')
         sessionStorage.removeItem('selectedTab')
         next('/');
     } else {
-        menuStore.updateActivePath(to.path)
+        menuStore.updateActivePath(tabsStore.editableTabsValue)
         next(); // 继续路由导航
         // 等待菜单树加载完成
         let menuTree = await menuStore.getMenuList();

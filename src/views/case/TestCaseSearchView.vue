@@ -1,13 +1,14 @@
 <script setup>
-import {useTestCase} from "@/store/case/testCase.js";
+import {useTestCaseStore} from "@/store/case/testCase.js";
 import {ref, onMounted, reactive} from "vue";
 import {AxiosError} from "axios";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {isEmpty} from "element-plus/es/utils/index";
-import {useProject} from "@/store/case/project.js";
+import {useProjectStore} from "@/store/case/project.js";
 import {deleteTestCase} from "@/service/case/testCaseService.js";
+import router from "@/router/index.js";
 
-const testCaseStore = useTestCase()
+const testCaseStore = useTestCaseStore()
 
 // 页面加载刷新数据
 onMounted( async () => {
@@ -154,7 +155,7 @@ const handleResponsibleBlur = () => {
   searchProjectList.value = []
 }
 
-const projectStore = useProject()
+const projectStore = useProjectStore()
 
 // 远程搜索项目
 const remoteMethod = async (query) => {
@@ -178,15 +179,22 @@ const remoteMethod = async (query) => {
 const handleCreateButtonClick = () => {
   // 打开编辑对话框
   testCaseStore.openTestCaseEditCard()
-
+  router.push({
+    path:'/case/testCase/testEdit'
+  })
 }
 
 // 双击列表数据
-const handleRowDblclick = async (row, column, event) => {
+const handleRowDblclick = (row, column, event) => {
   if (!isEmpty(row)) {
     // 打开编辑对话框
-    await testCaseStore.setTestCaseInfo(row.id)
     testCaseStore.openTestCaseEditCard()
+    router.push({
+      name: 'testEdit',
+      query: {
+        id: row.id,
+      }
+    })
   }
 }
 
@@ -269,7 +277,7 @@ const handleRowDblclick = async (row, column, event) => {
                     highlight-current-row
                     stripe
                     border
-                    v-loading="searchLoading"
+                    v-loading.fullscreen.lock="searchLoading"
                     style="width: 100%; height: 60vh"
                     @sort-change="handleSortChange"
                     @row-dblclick="handleRowDblclick"
@@ -291,7 +299,7 @@ const handleRowDblclick = async (row, column, event) => {
             <el-table-column :sortable="true" prop="priority" label="优先级" width="100px" :show-overflow-tooltip="true"/>
             <el-table-column :sortable="true" prop="method" label="请求方法" width="100px" :formatter="methodFormatter" :show-overflow-tooltip="true"/>
             <el-table-column :sortable="true" prop="path" label="路径" width="300px" :show-overflow-tooltip="true"/>
-            <el-table-column :sortable="true" prop="precondition" label="前置请求" width="300px" :show-overflow-tooltip="true"/>
+            <el-table-column prop="precondition" label="前置请求" width="300px" :show-overflow-tooltip="true"/>
             <el-table-column :sortable="true" prop="created_date" label="创建时间" width="200px" :show-overflow-tooltip="true"/>
             <el-table-column :sortable="true" prop="created_by" label="创建人" width="200px" :show-overflow-tooltip="true"/>
             <el-table-column :sortable="true" prop="updated_date" label="更新时间" width="200px" :show-overflow-tooltip="true"/>

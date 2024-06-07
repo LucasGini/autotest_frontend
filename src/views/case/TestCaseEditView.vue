@@ -1,51 +1,23 @@
 <script setup>
-import {useTestCase} from "@/store/case/testCase.js";
-import {reactive, ref, watchEffect} from "vue";
-import {createProject, updateProject} from "@/service/case/testProjectService.js";
+import {useTestCaseStore} from "@/store/case/testCase.js";
+import {reactive, ref, onMounted} from "vue";
 import {ElMessage} from "element-plus";
-import {useProject} from "@/store/case/project.js";
+import {useProjectStore} from "@/store/case/project.js";
 import {isEmpty} from "element-plus/es/utils/index";
 import JsonEditorVue from "json-editor-vue3";
+import {toObject, toKeyValuePair} from "@/utils/dataFormatConversion.js"
 import KeyValueEditor from "@/components/KeyValueEditor.vue";
 import AssertEditor from "@/components/AssertEditor.vue";
+import router from "@/router/index.js";
+import {useRoute} from "vue-router";
 
 // 测试用例状态管理工具
-const testCaseStore = useTestCase()
+const testCaseStore = useTestCaseStore()
 
 //测试项目状态管理工具
-const projectStore = useProject()
+const projectStore = useProjectStore()
 
-// 测试用例详情
-const testCaseInfo =  reactive(testCaseStore.testCaseInfo)
-
-// 对象转键值对
-const toKeyValuePair = (obj) => {
-  const output = []
-  if (!isEmpty(obj)) {
-    Object.keys(obj).forEach(k => {
-      output.push({key: k, value: obj[k]})
-    })
-    return output
-  }
-  return [{key: '', value: ''}]
-}
-
-// 键值对转对象
-const toObject = (keyValueArray) => {
-  const obj = {}
-  keyValueArray.forEach(item => {
-    if (item.key !== '') {
-      obj[item.key] = item.value
-    }
-  })
-  return obj
-}
-
-// 点击返回按钮处理
-const onBack = () => {
-  testCaseStore.openTestCaseSearchCard()
-}
-
+const route = useRoute()
 
 // 远程搜索加载状态
 const remoteSearchLoading = ref(false)
@@ -53,32 +25,43 @@ const remoteSearchLoading = ref(false)
 // 搜索项目列表
 const searchProjectList = ref([])
 
-// 远程搜索项目
-const remoteMethod = async (query) => {
-  console.log(query)
-  if (query.length >= 4) {
-    remoteSearchLoading.value = true
-    try {
-      let response = await projectStore.setSearchProjectList(query)
-      if (response.status === 200 && !isEmpty(response.data.data)){
-        searchProjectList.value = projectStore.searchProjectList
-      }
-    } catch (error) {
-      ElMessage.error('查询项目异常')
-    } finally {
-      remoteSearchLoading.value = false
-    }
-  }
-}
-
-// 项目搜索框失去焦点处理方法
-const handleResponsibleBlur = () => {
-  searchProjectList.value = []
-}
-
 // 用例基础数据表单
-const caseBaseForm = reactive(testCaseInfo)
+const caseBaseForm = reactive({
+  id: '',
+  caseName: '',
+  projectName: '',
+  projectId: '',
+  priority: 1,
+  method: 1,
+  path: '',
+})
 
+// 初始化 headerKeyValue
+let headerKeyValue = reactive([])
+
+// params键值对
+let paramsKeyValue = reactive([])
+
+// 断言规则数据
+const assertData = reactive([{
+  assert: '',
+  path: '',
+  value: '',
+  types: '',
+  meg: ''
+}])
+
+// 取值规则键值对
+let fetchKeyValue = reactive([])
+
+// 依赖参数键值对
+let dependentKeyValue = reactive([])
+
+// 默认选中的标签
+const editableTabsValue = ref('headers')
+
+// loading
+const isLoading = ref(false)
 
 // 枚举
 // 请求方法枚举
@@ -98,82 +81,139 @@ const priorityEnum = [
   {label: 4, value:4},
 ]
 
-// 标签页默认选中
-const editableTabsValue = ref('headers')
 
-// 初始化 headerKeyValue
-const headerKeyValue = ref(toKeyValuePair(testCaseInfo.header))
+onMounted(async () => {
+  console.log(route.query);
+  if (route.query.id) {
+    await fetchTestCaseInfo(route.query.id);
+    buildTestCaseInfo();
+  } else {
+    initTestCaseInfo()
+  }
+});
 
+const fetchTestCaseInfo = async (caseId) => {
+  try {
+    isLoading.value = true
+    await testCaseStore.setTestCaseInfo(caseId)
+  } catch (e) {
+    ElMessage.error(`查询测试用例详情失败：${e}`)
+  } finally {
+    isLoading.value = false
+  }
+}
 
-// params键值对
-const paramsKeyValue = ref(toKeyValuePair(testCaseInfo.param))
+// 初始化单数据
+const initTestCaseInfo = () => {
+  const testCaseInfo = testCaseStore.testCaseInfo;
+  console.log('testCaseInfo', testCaseInfo);
+
+  // 初始化表单数据
+  caseBaseForm.id = null;
+  caseBaseForm.caseName = '';
+  caseBaseForm.projectName = '';
+  caseBaseForm.projectId = null;
+  caseBaseForm.priority = 1;
+  caseBaseForm.method = 1;
+  caseBaseForm.path = '';
+
+  Object.assign(headerKeyValue, [{key: '', value: ''}]);
+  Object.assign(paramsKeyValue, [{key: '', value: ''}]);
+  Object.assign(fetchKeyValue, [{key: '', value: ''}]);
+  Object.assign(dependentKeyValue, [{key: '', value: ''}]);
+}
+
+// 构建表单数据
+const buildTestCaseInfo = () => {
+  const testCaseInfo = testCaseStore.testCaseInfo;
+  console.log('testCaseInfo', testCaseInfo);
+
+  caseBaseForm.id = testCaseInfo.id;
+  caseBaseForm.caseName = testCaseInfo.caseName;
+  caseBaseForm.projectName = testCaseInfo.projectName;
+  caseBaseForm.projectId = testCaseInfo.projectId;
+  caseBaseForm.priority = testCaseInfo.priority;
+  caseBaseForm.method = testCaseInfo.method;
+  caseBaseForm.path = testCaseInfo.path;
+
+  Object.assign(headerKeyValue, toKeyValuePair(testCaseInfo.header));
+  Object.assign(paramsKeyValue, toKeyValuePair(testCaseInfo.param));
+  Object.assign(fetchKeyValue, toKeyValuePair(testCaseInfo.fetch));
+  Object.assign(dependentKeyValue, toKeyValuePair(testCaseInfo.dependent));
+}
+
+// 点击返回按钮处理
+const onBack = () => {
+  router.push('/case/testCase')
+  testCaseStore.openTestCaseSearchCard()
+}
+
+// 远程搜索项目
+const remoteMethod = async (query) => {
+  console.log(query)
+  if (query.length >= 4) {
+    remoteSearchLoading.value = true
+    try {
+      let response = await projectStore.setSearchProjectList(query)
+      if (response.status === 200 && !isEmpty(response.data.data)) {
+        searchProjectList.value = projectStore.searchProjectList
+      }
+    } catch (error) {
+      ElMessage.error('查询项目异常')
+    } finally {
+      remoteSearchLoading.value = false
+    }
+  }
+}
+
+// 项目搜索框失去焦点处理方法
+const handleResponsibleBlur = () => {
+  searchProjectList.value = []
+}
 
 // 处理子组件数据变更事件
 const handleHeaderKeyValueUpdate = (updateData) => {
-  headerKeyValue.value = updateData
-  testCaseInfo.header = toObject(updateData)
-  console.log(headerKeyValue)
+  Object.assign(headerKeyValue, updateData)
+  testCaseStore.testCaseInfo.header = toObject(updateData)
 }
 
 // 处理子组件数据变更事件
 const handleParamsKeyValueUpdate = (updateData) => {
-  paramsKeyValue.value = updateData
-  testCaseInfo.param = toObject(updateData)
-  console.log(headerKeyValue)
+  Object.assign(paramsKeyValue, updateData)
+  testCaseStore.testCaseInfo.param = toObject(updateData)
 }
-
-// 断言规则数据
-const assertData =  ref([{
-  assert: '',
-  path: '',
-  value: '',
-  types: '',
-  meg: ''
-}])
 
 // 处理子组件数据变更事件
 const handleAssertDataUpdate = (updateData) => {
   assertData.value = updateData
-  console.log(assertData)
 }
-
-// 取值规则键值对
-const fetchKeyValue = ref(toKeyValuePair(testCaseInfo.fetch))
 
 // 处理子组件数据变更事件
 const handleFetchKeyValueUpdate = (updateData) => {
-  paramsKeyValue.value = updateData
-  testCaseInfo.fetch = toObject(updateData)
-  console.log(headerKeyValue)
+  Object.assign(fetchKeyValue, updateData)
+  testCaseStore.testCaseInfo.fetch = toObject(updateData)
 }
-
-// 依赖参数键值对
-const dependentKeyValue = ref([{
-  key: '',
-  value: ''
-}])
 
 // 处理子组件数据变更事件
 const handleDependentKeyValueUpdate = (updateData) => {
-  dependentKeyValue.value = updateData
-  console.log(dependentKeyValue)
+  Object.assign(dependentKeyValue, updateData)
+  testCaseStore.testCaseInfo.dependent = toObject(updateData)
 }
 
 const handleSave = () => {
   console.log(testCaseStore.testCaseInfo)
-  console.log(testCaseInfo)
+  console.log(caseBaseForm)
   console.log(headerKeyValue)
 }
 
-const handleSelectChange = () => {
-  console.log('选择变更')
+const handleSelectChange = (data) => {
+  testCaseStore.testCaseInfo.projectId = data
 }
-
 </script>
 
 <template>
   <el-card class="edit-case-card">
-    <el-container class="test-case-container">
+    <el-container class="test-case-container" v-loading.fullscreen.lock="isLoading">
       <el-header class="test-case-header">
         <div aria-label="page header" class="pageHeader">
           <el-page-header @back="onBack">
@@ -279,7 +319,7 @@ const handleSelectChange = () => {
               <KeyValueEditor :data="headerKeyValue" @update:data="handleHeaderKeyValueUpdate"></KeyValueEditor>
             </el-tab-pane>
             <el-tab-pane label="Params" name="params">
-              <KeyValueEditor :data="paramsKeyValue" @update:data="handleParamsKeyValueUpdate" />
+              <KeyValueEditor :data="paramsKeyValue" @update:data="handleParamsKeyValueUpdate"/>
             </el-tab-pane>
             <el-tab-pane label="Body" name="body">
               <JsonEditorVue class="json-editor" language="zh">
@@ -290,10 +330,10 @@ const handleSelectChange = () => {
               <AssertEditor :data="assertData" @update:data="handleAssertDataUpdate"/>
             </el-tab-pane>
             <el-tab-pane label="取值规则" name="fetch">
-              <KeyValueEditor :data="fetchKeyValue" @update:data="handleFetchKeyValueUpdate" />
+              <KeyValueEditor :data="fetchKeyValue" @update:data="handleFetchKeyValueUpdate"/>
             </el-tab-pane>
             <el-tab-pane label="依赖参数" name="dependent">
-              <KeyValueEditor :data="dependentKeyValue" @update:data="handleDependentKeyValueUpdate" />
+              <KeyValueEditor :data="dependentKeyValue" @update:data="handleDependentKeyValueUpdate"/>
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -303,12 +343,16 @@ const handleSelectChange = () => {
 </template>
 
 <style scoped>
-.edit-case-card {}
+.edit-case-card {
+}
+
 .test-case-container {
 }
+
 .pageHeader {
   width: 100%;
 }
+
 .test-case-main {
   display: flex;
   justify-content: space-between;
@@ -316,6 +360,7 @@ const handleSelectChange = () => {
   padding: 0;
 
 }
+
 .test-case-footer {
   height: 40vh;
   border: 1px solid var(--el-border-color);
@@ -324,6 +369,7 @@ const handleSelectChange = () => {
   width: 100%;
   min-width: 1200px;
 }
+
 .test-data-tabs {
   width: 100%;
   min-width: 1200px;
@@ -331,7 +377,7 @@ const handleSelectChange = () => {
 
 h1 {
   font-size: 20px;
-  margin:0;
+  margin: 0;
   padding-bottom: 10px;
   display: flex;
   justify-content: center;
@@ -346,6 +392,7 @@ h1 {
   text-align: center;
 
 }
+
 .case-base-main {
   width: 20%;
   margin: 0;
@@ -362,6 +409,7 @@ h1 {
   padding: 20px 0 0 0;
   min-width: 800px;
 }
+
 .case-base-form {
   max-width: 100%;
   width: 100%;
@@ -379,7 +427,7 @@ h1 {
   --el-transfer-panel-width: 300px;
   --el-checkbox-font-size: 20px;
   --el-checkbox-input-height: 20px;
-  --el-checkbox-input-width:20px
+  --el-checkbox-input-width: 20px
 }
 
 :deep(.el-checkbox.el-checkbox--small .el-checkbox__label) {
@@ -389,15 +437,16 @@ h1 {
 .el-form-item {
   width: 300px;
 }
+
 .el-divider {
   margin: 0;
 }
+
 .el-card {
-  --el-card-padding: 0 20px 20px ;
+  --el-card-padding: 0 20px 20px;
 }
+
 .json-editor {
   height: 33.7vh;
 }
-
-
 </style>
