@@ -65,9 +65,7 @@ export const useTestCaseStore = defineStore('testCase', () => {
                 testCaseInfo.projectId = responseData.project.id
                 testCaseInfo.projectName = responseData.project.project_name
             }
-            if (responseData.data.header){
-                testCaseInfo.header = responseData.data.header
-            }
+            testCaseInfo.header = responseData.data.header
             testCaseInfo.body = responseData.data.body
             testCaseInfo.param = responseData.data.param
             testCaseInfo.fetch = responseData.data.fetch

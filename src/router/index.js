@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from "vue-router";
-import HomePage from "@/components/HomePage.vue";
+import HomePage from "@/views/HomePage.vue";
 import systemRoutes from "@/router/syetemRouter.js";
 import caseRoutes from "@/router/caseRouter.js"
 import pinia from "@/store/index.js";
@@ -20,6 +20,7 @@ const routes = [
 ];
 
 const router = createRouter({
+    // 路由器的工作模式
     history: createWebHistory(),
     routes,
 })

@@ -37,10 +37,10 @@ const caseBaseForm = reactive({
 })
 
 // 初始化 headerKeyValue
-let headerKeyValue = ref([{key:'', value:''}])
+let headerKeyValue = reactive([])
 
 // params键值对
-let paramsKeyValue = ref([{key:'', value:''}])
+let paramsKeyValue = reactive([])
 
 // 断言规则数据
 const assertData = reactive([{
@@ -52,10 +52,10 @@ const assertData = reactive([{
 }])
 
 // 取值规则键值对
-let fetchKeyValue = ref([{key:'', value:''}])
+let fetchKeyValue = reactive([])
 
 // 依赖参数键值对
-let dependentKeyValue = ref([{key:'', value:''}])
+let dependentKeyValue = reactive([])
 
 // 默认选中的标签
 const editableTabsValue = ref('headers')
@@ -117,10 +117,10 @@ const initTestCaseInfo = () => {
   caseBaseForm.method = 1;
   caseBaseForm.path = '';
 
-  headerKeyValue.value = [{key:'', value:''}];
-  paramsKeyValue.value = [{key:'', value:''}];
-  fetchKeyValue.value = [{key:'', value:''}];
-  dependentKeyValue.value = [{key:'', value:''}];
+  Object.assign(headerKeyValue, [{key: '', value: ''}]);
+  Object.assign(paramsKeyValue, [{key: '', value: ''}]);
+  Object.assign(fetchKeyValue, [{key: '', value: ''}]);
+  Object.assign(dependentKeyValue, [{key: '', value: ''}]);
 }
 
 // 构建表单数据
@@ -136,10 +136,10 @@ const buildTestCaseInfo = () => {
   caseBaseForm.method = testCaseInfo.method;
   caseBaseForm.path = testCaseInfo.path;
 
-  headerKeyValue.value = toKeyValuePair(testCaseInfo.header);
-  paramsKeyValue.value = toKeyValuePair(testCaseInfo.param);
-  fetchKeyValue.value = toKeyValuePair(testCaseInfo.fetch);
-  dependentKeyValue.value = toKeyValuePair(testCaseInfo.dependent);
+  Object.assign(headerKeyValue, toKeyValuePair(testCaseInfo.header));
+  Object.assign(paramsKeyValue, toKeyValuePair(testCaseInfo.param));
+  Object.assign(fetchKeyValue, toKeyValuePair(testCaseInfo.fetch));
+  Object.assign(dependentKeyValue, toKeyValuePair(testCaseInfo.dependent));
 }
 
 // 点击返回按钮处理
@@ -173,36 +173,31 @@ const handleResponsibleBlur = () => {
 
 // 处理子组件数据变更事件
 const handleHeaderKeyValueUpdate = (updateData) => {
-  headerKeyValue.value = updateData
+  Object.assign(headerKeyValue, updateData)
   testCaseStore.testCaseInfo.header = toObject(updateData)
-  console.log(headerKeyValue)
 }
 
 // 处理子组件数据变更事件
 const handleParamsKeyValueUpdate = (updateData) => {
-  paramsKeyValue.value = updateData
+  Object.assign(paramsKeyValue, updateData)
   testCaseStore.testCaseInfo.param = toObject(updateData)
-  console.log(paramsKeyValue)
 }
 
 // 处理子组件数据变更事件
 const handleAssertDataUpdate = (updateData) => {
   assertData.value = updateData
-  console.log(assertData)
 }
 
 // 处理子组件数据变更事件
 const handleFetchKeyValueUpdate = (updateData) => {
-  fetchKeyValue.value = updateData
+  Object.assign(fetchKeyValue, updateData)
   testCaseStore.testCaseInfo.fetch = toObject(updateData)
-  console.log(fetchKeyValue)
 }
 
 // 处理子组件数据变更事件
 const handleDependentKeyValueUpdate = (updateData) => {
-  dependentKeyValue.value = updateData
+  Object.assign(dependentKeyValue, updateData)
   testCaseStore.testCaseInfo.dependent = toObject(updateData)
-  console.log(dependentKeyValue)
 }
 
 const handleSave = () => {
@@ -212,7 +207,6 @@ const handleSave = () => {
 }
 
 const handleSelectChange = (data) => {
-  console.log('选择变更', data)
   testCaseStore.testCaseInfo.projectId = data
 }
 </script>

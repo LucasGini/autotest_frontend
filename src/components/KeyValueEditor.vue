@@ -9,7 +9,7 @@ const { emit } = getCurrentInstance()
 
 console.log('props',props.data)
 
-const tableData = reactive(props.data)
+const tableData = props.data
 
 const handleAddRow = (index, row) => {
   tableData.push({key:'', value: ''})
@@ -29,6 +29,12 @@ const handleDeleteRow = (index, row) => {
 
 watch(tableData, (newValue) => {
   emit('update:data', newValue)  // 触发自定义事件，并传递变化后的数据给父组件
+})
+
+// 监听 props 的变化，并更新数据
+watch(props, (newValue) => {
+  Object.assign(tableData, newValue.data)
+  console.log('props 的变化', tableData)
 })
 
 
