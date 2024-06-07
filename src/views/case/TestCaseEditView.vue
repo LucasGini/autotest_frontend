@@ -1,6 +1,6 @@
 <script setup>
 import {useTestCaseStore} from "@/store/case/testCase.js";
-import {reactive, ref} from "vue";
+import {reactive, ref, onMounted} from "vue";
 import {ElMessage} from "element-plus";
 import {useProjectStore} from "@/store/case/project.js";
 import {isEmpty} from "element-plus/es/utils/index";
@@ -8,6 +8,8 @@ import JsonEditorVue from "json-editor-vue3";
 import {toObject, toKeyValuePair} from "@/utils/dataFormatConversion.js"
 import KeyValueEditor from "@/components/KeyValueEditor.vue";
 import AssertEditor from "@/components/AssertEditor.vue";
+import router from "@/router/index.js";
+import {useRoute} from "vue-router";
 
 // 测试用例状态管理工具
 const testCaseStore = useTestCaseStore()
@@ -15,12 +17,20 @@ const testCaseStore = useTestCaseStore()
 //测试项目状态管理工具
 const projectStore = useProjectStore()
 
+onMounted(async () => {
+  const route = useRoute()
+  console.log(route.query)
+  await testCaseStore.setTestCaseInfo(route.query.id)
+})
+
 // 测试用例详情
 const testCaseInfo =  reactive(testCaseStore.testCaseInfo)
+console.log('testCaseInfo', testCaseInfo)
 
 
 // 点击返回按钮处理
 const onBack = () => {
+  router.push('/case/testCase')
   testCaseStore.openTestCaseSearchCard()
 }
 

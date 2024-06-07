@@ -6,6 +6,7 @@ import {ElMessage, ElMessageBox} from "element-plus";
 import {isEmpty} from "element-plus/es/utils/index";
 import {useProjectStore} from "@/store/case/project.js";
 import {deleteTestCase} from "@/service/case/testCaseService.js";
+import router from "@/router/index.js";
 
 const testCaseStore = useTestCaseStore()
 
@@ -178,7 +179,9 @@ const remoteMethod = async (query) => {
 const handleCreateButtonClick = () => {
   // 打开编辑对话框
   testCaseStore.openTestCaseEditCard()
-
+  router.push({
+    path:'/case/testCase/edit'
+  })
 }
 
 // 双击列表数据
@@ -187,6 +190,12 @@ const handleRowDblclick = async (row, column, event) => {
     // 打开编辑对话框
     await testCaseStore.setTestCaseInfo(row.id)
     testCaseStore.openTestCaseEditCard()
+    router.push({
+      name:'edit',
+      query: {
+        id: row.id,
+      }
+    })
   }
 }
 

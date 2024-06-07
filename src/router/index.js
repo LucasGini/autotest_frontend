@@ -50,13 +50,13 @@ const recursiveMenuSearch = (menuTree, path) => {
 
 // 使用导航守卫重定向未知路径
 router.beforeEach(async (to, from, next) => {
-    const knownPaths = router.getRoutes().map(route => route.path); // 所有已知的路径
+    const knownPaths = router.getRoutes().map(route => route.path);
     if (!knownPaths.includes(to.path)) {
         tabsStore.updateEditableTabsValue('/')
         sessionStorage.removeItem('selectedTab')
         next('/');
     } else {
-        menuStore.updateActivePath(to.path)
+        menuStore.updateActivePath(tabsStore.editableTabsValue)
         next(); // 继续路由导航
         // 等待菜单树加载完成
         let menuTree = await menuStore.getMenuList();

@@ -40,7 +40,7 @@ export const useTestCaseStore = defineStore('testCase', () => {
     })
 
     // 查询编辑页面显示状态
-    const showSearchEditCard = ref(false)
+    const showSearchEditCard = ref(true)
 
     // 更新测试用例列表
     const setTestCaseList = async (config) => {
