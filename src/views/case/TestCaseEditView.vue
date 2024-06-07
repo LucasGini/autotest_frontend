@@ -1,6 +1,6 @@
 <script setup>
 import {useTestCaseStore} from "@/store/case/testCase.js";
-import {reactive, ref, onMounted, watchEffect} from "vue";
+import {reactive, ref, onMounted} from "vue";
 import {ElMessage} from "element-plus";
 import {useProjectStore} from "@/store/case/project.js";
 import {isEmpty} from "element-plus/es/utils/index";
@@ -60,6 +60,9 @@ let dependentKeyValue = ref([{key:'', value:''}])
 // 默认选中的标签
 const editableTabsValue = ref('headers')
 
+// loading
+const isLoading = ref(false)
+
 // 枚举
 // 请求方法枚举
 const methodEnum = [
@@ -82,12 +85,23 @@ const priorityEnum = [
 onMounted(async () => {
   console.log(route.query);
   if (route.query.id) {
-    await testCaseStore.setTestCaseInfo(route.query.id);
+    await fetchTestCaseInfo(route.query.id);
     buildTestCaseInfo();
   } else {
     initTestCaseInfo()
   }
 });
+
+const fetchTestCaseInfo = async (caseId) => {
+  try {
+    isLoading.value = true
+    await testCaseStore.setTestCaseInfo(caseId)
+  } catch (e) {
+    ElMessage.error(`查询测试用例详情失败：${e}`)
+  } finally {
+    isLoading.value = false
+  }
+}
 
 // 初始化单数据
 const initTestCaseInfo = () => {
@@ -205,7 +219,7 @@ const handleSelectChange = (data) => {
 
 <template>
   <el-card class="edit-case-card">
-    <el-container class="test-case-container">
+    <el-container class="test-case-container" v-loading.fullscreen.lock="isLoading">
       <el-header class="test-case-header">
         <div aria-label="page header" class="pageHeader">
           <el-page-header @back="onBack">

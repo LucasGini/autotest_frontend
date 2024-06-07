@@ -9,8 +9,8 @@ const caseRoutes = [
         component: TestCaseView,
         children: [
             {
-                path:'edit',
-                name: 'edit',
+                path:'testEdit',
+                name: 'testEdit',
                 component: TestCaseEditView
             }
         ]

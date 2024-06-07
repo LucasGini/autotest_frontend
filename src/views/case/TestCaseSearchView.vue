@@ -180,7 +180,7 @@ const handleCreateButtonClick = () => {
   // 打开编辑对话框
   testCaseStore.openTestCaseEditCard()
   router.push({
-    path:'/case/testCase/edit'
+    path:'/case/testCase/testEdit'
   })
 }
 
@@ -190,7 +190,7 @@ const handleRowDblclick = (row, column, event) => {
     // 打开编辑对话框
     testCaseStore.openTestCaseEditCard()
     router.push({
-      name: 'edit',
+      name: 'testEdit',
       query: {
         id: row.id,
       }
@@ -277,7 +277,7 @@ const handleRowDblclick = (row, column, event) => {
                     highlight-current-row
                     stripe
                     border
-                    v-loading="searchLoading"
+                    v-loading.fullscreen.lock="searchLoading"
                     style="width: 100%; height: 60vh"
                     @sort-change="handleSortChange"
                     @row-dblclick="handleRowDblclick"
