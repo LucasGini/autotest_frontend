@@ -1,6 +1,6 @@
 <script setup>
 import {useTestCaseStore} from "@/store/case/testCase.js";
-import {reactive, ref, onMounted} from "vue";
+import {reactive, ref, onMounted, watchEffect} from "vue";
 import {ElMessage} from "element-plus";
 import {useProjectStore} from "@/store/case/project.js";
 import {isEmpty} from "element-plus/es/utils/index";
@@ -17,23 +17,7 @@ const testCaseStore = useTestCaseStore()
 //测试项目状态管理工具
 const projectStore = useProjectStore()
 
-onMounted(async () => {
-  const route = useRoute()
-  console.log(route.query)
-  await testCaseStore.setTestCaseInfo(route.query.id)
-})
-
-// 测试用例详情
-const testCaseInfo =  reactive(testCaseStore.testCaseInfo)
-console.log('testCaseInfo', testCaseInfo)
-
-
-// 点击返回按钮处理
-const onBack = () => {
-  router.push('/case/testCase')
-  testCaseStore.openTestCaseSearchCard()
-}
-
+const route = useRoute()
 
 // 远程搜索加载状态
 const remoteSearchLoading = ref(false)
@@ -41,40 +25,40 @@ const remoteSearchLoading = ref(false)
 // 搜索项目列表
 const searchProjectList = ref([])
 
-// 远程搜索项目
-const remoteMethod = async (query) => {
-  console.log(query)
-  if (query.length >= 4) {
-    remoteSearchLoading.value = true
-    try {
-      let response = await projectStore.setSearchProjectList(query)
-      if (response.status === 200 && !isEmpty(response.data.data)){
-        searchProjectList.value = projectStore.searchProjectList
-      }
-    } catch (error) {
-      ElMessage.error('查询项目异常')
-    } finally {
-      remoteSearchLoading.value = false
-    }
-  }
-}
-
-// 项目搜索框失去焦点处理方法
-const handleResponsibleBlur = () => {
-  searchProjectList.value = []
-}
-
 // 用例基础数据表单
 const caseBaseForm = reactive({
-  id: testCaseInfo.id,
-  caseName: testCaseInfo.caseName,
-  projectName: testCaseInfo.projectName,
-  projectId: testCaseInfo.projectId,
-  priority: testCaseInfo.priority,
-  method: testCaseInfo.method,
-  path: testCaseInfo.path,
+  id: '',
+  caseName: '',
+  projectName: '',
+  projectId: '',
+  priority: 1,
+  method: 1,
+  path: '',
 })
 
+// 初始化 headerKeyValue
+let headerKeyValue = ref([{key:'', value:''}])
+
+// params键值对
+let paramsKeyValue = ref([{key:'', value:''}])
+
+// 断言规则数据
+const assertData = reactive([{
+  assert: '',
+  path: '',
+  value: '',
+  types: '',
+  meg: ''
+}])
+
+// 取值规则键值对
+let fetchKeyValue = ref([{key:'', value:''}])
+
+// 依赖参数键值对
+let dependentKeyValue = ref([{key:'', value:''}])
+
+// 默认选中的标签
+const editableTabsValue = ref('headers')
 
 // 枚举
 // 请求方法枚举
@@ -94,38 +78,98 @@ const priorityEnum = [
   {label: 4, value:4},
 ]
 
-// 标签页默认选中
-const editableTabsValue = ref('headers')
 
-// 初始化 headerKeyValue
-const headerKeyValue = ref(toKeyValuePair(testCaseInfo.header))
+onMounted(async () => {
+  console.log(route.query);
+  if (route.query.id) {
+    await testCaseStore.setTestCaseInfo(route.query.id);
+    buildTestCaseInfo();
+  } else {
+    initTestCaseInfo()
+  }
+});
 
+// 初始化单数据
+const initTestCaseInfo = () => {
+  const testCaseInfo = testCaseStore.testCaseInfo;
+  console.log('testCaseInfo', testCaseInfo);
 
-// params键值对
-const paramsKeyValue = ref(toKeyValuePair(testCaseInfo.param))
+  // 初始化表单数据
+  caseBaseForm.id = null;
+  caseBaseForm.caseName = '';
+  caseBaseForm.projectName = '';
+  caseBaseForm.projectId = null;
+  caseBaseForm.priority = 1;
+  caseBaseForm.method = 1;
+  caseBaseForm.path = '';
+
+  headerKeyValue.value = [{key:'', value:''}];
+  paramsKeyValue.value = [{key:'', value:''}];
+  fetchKeyValue.value = [{key:'', value:''}];
+  dependentKeyValue.value = [{key:'', value:''}];
+}
+
+// 构建表单数据
+const buildTestCaseInfo = () => {
+  const testCaseInfo = testCaseStore.testCaseInfo;
+  console.log('testCaseInfo', testCaseInfo);
+
+  caseBaseForm.id = testCaseInfo.id;
+  caseBaseForm.caseName = testCaseInfo.caseName;
+  caseBaseForm.projectName = testCaseInfo.projectName;
+  caseBaseForm.projectId = testCaseInfo.projectId;
+  caseBaseForm.priority = testCaseInfo.priority;
+  caseBaseForm.method = testCaseInfo.method;
+  caseBaseForm.path = testCaseInfo.path;
+
+  headerKeyValue.value = toKeyValuePair(testCaseInfo.header);
+  paramsKeyValue.value = toKeyValuePair(testCaseInfo.param);
+  fetchKeyValue.value = toKeyValuePair(testCaseInfo.fetch);
+  dependentKeyValue.value = toKeyValuePair(testCaseInfo.dependent);
+}
+
+// 点击返回按钮处理
+const onBack = () => {
+  router.push('/case/testCase')
+  testCaseStore.openTestCaseSearchCard()
+}
+
+// 远程搜索项目
+const remoteMethod = async (query) => {
+  console.log(query)
+  if (query.length >= 4) {
+    remoteSearchLoading.value = true
+    try {
+      let response = await projectStore.setSearchProjectList(query)
+      if (response.status === 200 && !isEmpty(response.data.data)) {
+        searchProjectList.value = projectStore.searchProjectList
+      }
+    } catch (error) {
+      ElMessage.error('查询项目异常')
+    } finally {
+      remoteSearchLoading.value = false
+    }
+  }
+}
+
+// 项目搜索框失去焦点处理方法
+const handleResponsibleBlur = () => {
+  searchProjectList.value = []
+}
 
 // 处理子组件数据变更事件
 const handleHeaderKeyValueUpdate = (updateData) => {
   headerKeyValue.value = updateData
-  testCaseInfo.header = toObject(updateData)
+  testCaseStore.testCaseInfo.header = toObject(updateData)
   console.log(headerKeyValue)
 }
 
 // 处理子组件数据变更事件
 const handleParamsKeyValueUpdate = (updateData) => {
   paramsKeyValue.value = updateData
-  testCaseInfo.param = toObject(updateData)
-  console.log(headerKeyValue)
+  testCaseStore.testCaseInfo.param = toObject(updateData)
+  console.log(paramsKeyValue)
 }
-
-// 断言规则数据
-const assertData =  ref([{
-  assert: '',
-  path: '',
-  value: '',
-  types: '',
-  meg: ''
-}])
 
 // 处理子组件数据变更事件
 const handleAssertDataUpdate = (updateData) => {
@@ -133,37 +177,30 @@ const handleAssertDataUpdate = (updateData) => {
   console.log(assertData)
 }
 
-// 取值规则键值对
-const fetchKeyValue = ref(toKeyValuePair(testCaseInfo.fetch))
-
 // 处理子组件数据变更事件
 const handleFetchKeyValueUpdate = (updateData) => {
-  paramsKeyValue.value = updateData
-  testCaseInfo.fetch = toObject(updateData)
-  console.log(headerKeyValue)
+  fetchKeyValue.value = updateData
+  testCaseStore.testCaseInfo.fetch = toObject(updateData)
+  console.log(fetchKeyValue)
 }
-
-// 依赖参数键值对
-const dependentKeyValue = ref(toKeyValuePair(testCaseInfo.dependent))
 
 // 处理子组件数据变更事件
 const handleDependentKeyValueUpdate = (updateData) => {
   dependentKeyValue.value = updateData
-  testCaseInfo.dependent = toObject(updateData)
+  testCaseStore.testCaseInfo.dependent = toObject(updateData)
   console.log(dependentKeyValue)
 }
 
 const handleSave = () => {
   console.log(testCaseStore.testCaseInfo)
-  console.log(testCaseInfo)
+  console.log(caseBaseForm)
   console.log(headerKeyValue)
 }
 
 const handleSelectChange = (data) => {
   console.log('选择变更', data)
-  testCaseInfo.projectId = data
+  testCaseStore.testCaseInfo.projectId = data
 }
-
 </script>
 
 <template>
@@ -274,7 +311,7 @@ const handleSelectChange = (data) => {
               <KeyValueEditor :data="headerKeyValue" @update:data="handleHeaderKeyValueUpdate"></KeyValueEditor>
             </el-tab-pane>
             <el-tab-pane label="Params" name="params">
-              <KeyValueEditor :data="paramsKeyValue" @update:data="handleParamsKeyValueUpdate" />
+              <KeyValueEditor :data="paramsKeyValue" @update:data="handleParamsKeyValueUpdate"/>
             </el-tab-pane>
             <el-tab-pane label="Body" name="body">
               <JsonEditorVue class="json-editor" language="zh">
@@ -285,10 +322,10 @@ const handleSelectChange = (data) => {
               <AssertEditor :data="assertData" @update:data="handleAssertDataUpdate"/>
             </el-tab-pane>
             <el-tab-pane label="取值规则" name="fetch">
-              <KeyValueEditor :data="fetchKeyValue" @update:data="handleFetchKeyValueUpdate" />
+              <KeyValueEditor :data="fetchKeyValue" @update:data="handleFetchKeyValueUpdate"/>
             </el-tab-pane>
             <el-tab-pane label="依赖参数" name="dependent">
-              <KeyValueEditor :data="dependentKeyValue" @update:data="handleDependentKeyValueUpdate" />
+              <KeyValueEditor :data="dependentKeyValue" @update:data="handleDependentKeyValueUpdate"/>
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -298,12 +335,16 @@ const handleSelectChange = (data) => {
 </template>
 
 <style scoped>
-.edit-case-card {}
+.edit-case-card {
+}
+
 .test-case-container {
 }
+
 .pageHeader {
   width: 100%;
 }
+
 .test-case-main {
   display: flex;
   justify-content: space-between;
@@ -311,6 +352,7 @@ const handleSelectChange = (data) => {
   padding: 0;
 
 }
+
 .test-case-footer {
   height: 40vh;
   border: 1px solid var(--el-border-color);
@@ -319,6 +361,7 @@ const handleSelectChange = (data) => {
   width: 100%;
   min-width: 1200px;
 }
+
 .test-data-tabs {
   width: 100%;
   min-width: 1200px;
@@ -326,7 +369,7 @@ const handleSelectChange = (data) => {
 
 h1 {
   font-size: 20px;
-  margin:0;
+  margin: 0;
   padding-bottom: 10px;
   display: flex;
   justify-content: center;
@@ -341,6 +384,7 @@ h1 {
   text-align: center;
 
 }
+
 .case-base-main {
   width: 20%;
   margin: 0;
@@ -357,6 +401,7 @@ h1 {
   padding: 20px 0 0 0;
   min-width: 800px;
 }
+
 .case-base-form {
   max-width: 100%;
   width: 100%;
@@ -374,7 +419,7 @@ h1 {
   --el-transfer-panel-width: 300px;
   --el-checkbox-font-size: 20px;
   --el-checkbox-input-height: 20px;
-  --el-checkbox-input-width:20px
+  --el-checkbox-input-width: 20px
 }
 
 :deep(.el-checkbox.el-checkbox--small .el-checkbox__label) {
@@ -384,15 +429,16 @@ h1 {
 .el-form-item {
   width: 300px;
 }
+
 .el-divider {
   margin: 0;
 }
+
 .el-card {
-  --el-card-padding: 0 20px 20px ;
+  --el-card-padding: 0 20px 20px;
 }
+
 .json-editor {
   height: 33.7vh;
 }
-
-
 </style>

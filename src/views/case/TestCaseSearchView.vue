@@ -185,13 +185,12 @@ const handleCreateButtonClick = () => {
 }
 
 // 双击列表数据
-const handleRowDblclick = async (row, column, event) => {
+const handleRowDblclick = (row, column, event) => {
   if (!isEmpty(row)) {
     // 打开编辑对话框
-    await testCaseStore.setTestCaseInfo(row.id)
     testCaseStore.openTestCaseEditCard()
     router.push({
-      name:'edit',
+      name: 'edit',
       query: {
         id: row.id,
       }
