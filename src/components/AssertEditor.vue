@@ -1,17 +1,19 @@
 <script setup>
-import {reactive, ref, watch, getCurrentInstance} from "vue";
+import {reactive, ref, watch} from "vue";
 import {ElMessage} from "element-plus";
 
 // 获取父组件传的值
-const props = defineProps(['data'])
+const props = defineProps(['modelValue'])
 
-const assertData = reactive(props.data)
+const assertData = props.modelValue
 
-// 获取当前组件实例
-const { emit } = getCurrentInstance()
+console.log('assertData', assertData)
+
+// 声明事件
+const emit  = defineEmits(['update:modelValue'])
 
 // 处理点击新增按钮事件
-const handleAddRow = () => {
+const handleAddRow = (index, row) => {
   assertData.push({
     assert: '',
     path: '',
@@ -68,7 +70,7 @@ const dataTypeEnum = ref([
 
 // 监听assertData变更
 watch(assertData, (newValue) => {
-  emit('update:data', newValue)  // 触发自定义事件，并传递变化后的数据给父组件
+  emit('update:modelValue', newValue)  // 触发自定义事件，并传递变化后的数据给父组件
 })
 
 
@@ -117,7 +119,7 @@ watch(assertData, (newValue) => {
       </el-table-column>
       <el-table-column label="Message">
         <template #default="scope">
-          <el-input v-model="scope.row.meg">
+          <el-input v-model="scope.row.msg">
 
           </el-input>
         </template>

@@ -13,10 +13,11 @@ const testCaseStore = useTestCaseStore()
 // 页面加载刷新数据
 onMounted( async () => {
   await fetchTestcaseList()
+  testCaseStore.openTestCaseSearchCard()
 })
 
 // 项目列表
-const testCaseList = ref([])
+const testCaseList = reactive([])
 
 // 分页参数
 const currentPage = ref(1)
@@ -61,11 +62,11 @@ const methodFormatter = (row, column, cellValue) => {
 
 // 查询表单
 const searchForm = ref({
-  caseName: '',
-  project: '',
+  caseName: null,
+  project: null,
   priority: null,
   method: null,
-  path: ''
+  path: null
 })
 
 // 查询处理
@@ -85,7 +86,7 @@ const fetchTestcaseList = async () => {
         ordering: sortOrder.value ? sortOrder.value : null
       }
     })
-    testCaseList.value = testCaseStore.testCaseList
+    Object.assign(testCaseList, testCaseStore.testCaseList)
     totalItems.value = response.data.total
   } catch ( error ){
     if (error instanceof AxiosError) {
