@@ -304,6 +304,7 @@ const handleConfirmDelete = async () => {
               highlight-current
               :expand-on-click-node="false"
               class="menu-tree"
+              default-expand-all
               style="max-width: 600px"
               :data="menuList.value"
               :props="defaultProps"

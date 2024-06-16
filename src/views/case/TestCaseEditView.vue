@@ -10,6 +10,7 @@ import KeyValueEditor from "@/components/KeyValueEditor.vue";
 import AssertEditor from "@/components/AssertEditor.vue";
 import router from "@/router/index.js";
 import {useRoute} from "vue-router";
+import {createTestCase, updateTestCase} from "@/service/case/testCaseService.js";
 
 // 测试用例状态管理工具
 const testCaseStore = useTestCaseStore()
@@ -36,20 +37,17 @@ const caseBaseForm = reactive({
   path: '',
 })
 
-// 初始化 headerKeyValue
+// header键值对
 let headerKeyValue = reactive([])
 
 // params键值对
 let paramsKeyValue = reactive([])
 
-// 断言规则数据
-const assertData = reactive([{
-  assert: '',
-  path: '',
-  value: '',
-  types: '',
-  meg: ''
-}])
+// body数据
+let bodyData = reactive({})
+
+// 断言规则数组
+const assertData = reactive([])
 
 // 取值规则键值对
 let fetchKeyValue = reactive([])
@@ -62,6 +60,35 @@ const editableTabsValue = ref('headers')
 
 // loading
 const isLoading = ref(false)
+
+// 穿梭框选中的数据
+const selectedValue = ref()
+
+// 全部测试用例
+const allTestCase = reactive([])
+
+// caseBaseForm表单的refs
+const caseBaseFormRef = ref()
+
+// 表单验证规则
+let  caseBaseFormRules = ref({
+  projectName: [
+    {required: true, message: '所属项目不能为空', trigger: 'blur'},
+  ],
+  caseName: [
+    {required: true, message: '用例名称不能为空', trigger: 'blur'},
+  ],
+  priority: [
+    {required: true, message: '优先级不能为空', trigger: 'blur'},
+  ],
+  method: [
+    {required: true, message: '请求方法不能为空', trigger: 'blur'},
+  ],
+  path: [
+    {required: true, message: '请求路径不能为空', trigger: 'blur'},
+  ]
+
+})
 
 // 枚举
 // 请求方法枚举
@@ -81,21 +108,34 @@ const priorityEnum = [
   {label: 4, value:4},
 ]
 
-
+// 组件挂载后执行
 onMounted(async () => {
-  console.log(route.query);
   if (route.query.id) {
-    await fetchTestCaseInfo(route.query.id);
+    await fetchTestCaseInfo(route.query.id)
     buildTestCaseInfo();
   } else {
+    await handleAllTestCaseData()
     initTestCaseInfo()
   }
 });
 
+// 将自身的测试用例排除
+const handleAllTestCaseData = async (caseId) => {
+  await testCaseStore.setAllTestCase()
+  if (caseId) {
+    Object.assign(allTestCase, testCaseStore.allTestCase.filter( item => item.id.toString() !== caseId))
+  }
+  else {
+    Object.assign(allTestCase, testCaseStore.allTestCase)
+  }
+}
+
+// 获取测试用例信息
 const fetchTestCaseInfo = async (caseId) => {
   try {
     isLoading.value = true
     await testCaseStore.setTestCaseInfo(caseId)
+    await handleAllTestCaseData(caseId)
   } catch (e) {
     ElMessage.error(`查询测试用例详情失败：${e}`)
   } finally {
@@ -105,9 +145,6 @@ const fetchTestCaseInfo = async (caseId) => {
 
 // 初始化单数据
 const initTestCaseInfo = () => {
-  const testCaseInfo = testCaseStore.testCaseInfo;
-  console.log('testCaseInfo', testCaseInfo);
-
   // 初始化表单数据
   caseBaseForm.id = null;
   caseBaseForm.caseName = '';
@@ -121,6 +158,7 @@ const initTestCaseInfo = () => {
   Object.assign(paramsKeyValue, [{key: '', value: ''}]);
   Object.assign(fetchKeyValue, [{key: '', value: ''}]);
   Object.assign(dependentKeyValue, [{key: '', value: ''}]);
+  Object.assign(assertData, [{assert: '', path: '', value: '', types: '', msg: ''}])
 }
 
 // 构建表单数据
@@ -136,10 +174,32 @@ const buildTestCaseInfo = () => {
   caseBaseForm.method = testCaseInfo.method;
   caseBaseForm.path = testCaseInfo.path;
 
+  selectedValue.value = testCaseInfo.precondition
+
+  if (testCaseInfo.body) {
+    Object.assign(bodyData, testCaseInfo.body)
+  }
   Object.assign(headerKeyValue, toKeyValuePair(testCaseInfo.header));
   Object.assign(paramsKeyValue, toKeyValuePair(testCaseInfo.param));
   Object.assign(fetchKeyValue, toKeyValuePair(testCaseInfo.fetch));
   Object.assign(dependentKeyValue, toKeyValuePair(testCaseInfo.dependent));
+  if (testCaseInfo.assertion) {
+    testCaseInfo.assertion.forEach(item => {
+      Object.keys(item).forEach( key => {
+        const data = {
+          assert: key,
+          path: item[key].path,
+          value: item[key].value,
+          types: item[key].types,
+          msg: item[key].msg
+        }
+        assertData.push(data)
+      })
+    })
+  } else {
+    assertData.push({assert: '', path: '', value: '', types: '', msg: ''})
+  }
+
 }
 
 // 点击返回按钮处理
@@ -171,44 +231,110 @@ const handleResponsibleBlur = () => {
   searchProjectList.value = []
 }
 
-// 处理子组件数据变更事件
-const handleHeaderKeyValueUpdate = (updateData) => {
-  Object.assign(headerKeyValue, updateData)
-  testCaseStore.testCaseInfo.header = toObject(updateData)
-}
-
-// 处理子组件数据变更事件
-const handleParamsKeyValueUpdate = (updateData) => {
-  Object.assign(paramsKeyValue, updateData)
-  testCaseStore.testCaseInfo.param = toObject(updateData)
-}
-
-// 处理子组件数据变更事件
-const handleAssertDataUpdate = (updateData) => {
-  assertData.value = updateData
-}
-
-// 处理子组件数据变更事件
-const handleFetchKeyValueUpdate = (updateData) => {
-  Object.assign(fetchKeyValue, updateData)
-  testCaseStore.testCaseInfo.fetch = toObject(updateData)
-}
-
-// 处理子组件数据变更事件
-const handleDependentKeyValueUpdate = (updateData) => {
-  Object.assign(dependentKeyValue, updateData)
-  testCaseStore.testCaseInfo.dependent = toObject(updateData)
-}
-
-const handleSave = () => {
-  console.log(testCaseStore.testCaseInfo)
-  console.log(caseBaseForm)
-  console.log(headerKeyValue)
-}
-
 const handleSelectChange = (data) => {
-  testCaseStore.testCaseInfo.projectId = data
+  caseBaseForm.projectId = data
 }
+
+// 测试用例请求数据
+const testCaseRequestData = reactive( {
+  precondition: [],
+  case_name: '',
+  priority: null,
+  method: null,
+  path: '',
+  project: null,
+  data: {
+    header: {},
+    param: {},
+    fetch: {},
+    dependent: {},
+    body: {},
+    assertion: []
+  }
+})
+
+// 处理断言规则数据
+const handleAssertData = (assertData) => {
+  const assertionDataList = []
+  assertData.forEach(item => {
+    const assertionData = {}
+    assertionData[item.assert] = {
+      path: item.path,
+      value: item.value,
+      types: item.types,
+      msg: item.msg
+    }
+    assertionDataList.push(assertionData)
+  })
+  return assertionDataList
+}
+
+
+// 构建测试用例请求表单
+const buildTestCaseRequestData = () => {
+  testCaseRequestData.precondition = selectedValue.value
+  testCaseRequestData.case_name = caseBaseForm.caseName
+  testCaseRequestData.project = caseBaseForm.projectId
+  testCaseRequestData.path = caseBaseForm.path
+  testCaseRequestData.method = caseBaseForm.method
+  testCaseRequestData.priority = caseBaseForm.priority
+  testCaseRequestData.data.header = toObject(headerKeyValue)
+  testCaseRequestData.data.param = toObject(paramsKeyValue)
+  testCaseRequestData.data.fetch = toObject(fetchKeyValue)
+  testCaseRequestData.data.dependent = toObject(dependentKeyValue)
+  testCaseRequestData.data.body = bodyData
+  testCaseRequestData.data.assertion = handleAssertData(assertData)
+}
+
+
+// 新增测试用例
+const handleCreateSave = async () => {
+  try {
+    await caseBaseFormRef.value.validate().catch(err => {
+      const message = Object.values(err)[0]
+      console.log(typeof message, message)
+      if (message.length > 0 && message[0]) {
+        throw message[0]
+      } else
+        throw '请检查用例基础数据是否正常输入'
+    })
+    buildTestCaseRequestData()
+    const {data} =  await createTestCase(testCaseRequestData)
+    if (data.code === 201) {
+      ElMessage.success('新增成功')
+      await router.replace({path: '/case/testCase'})
+      testCaseStore.openTestCaseSearchCard()
+    }
+  } catch (error) {
+    ElMessage.error(error)
+  }
+}
+
+// 修改测试用例
+const handleUpdateSave = async () => {
+  try {
+    await caseBaseFormRef.value.validate().catch(err => {
+      const message = Object.values(err)[0]
+      console.log(typeof message, message)
+      if (message.length > 0 && message[0]) {
+        throw message[0]
+      } else
+        throw '请检查用例基础数据是否正常输入'
+    })
+    buildTestCaseRequestData()
+    const {data} =  await updateTestCase(caseBaseForm.id, testCaseRequestData)
+    if (data.code === 200) {
+      ElMessage.success('修改成功')
+      await router.replace({path: '/case/testCase'})
+      testCaseStore.openTestCaseSearchCard()
+    }
+  } catch (error) {
+    ElMessage.error(error)
+  }
+}
+
+
+
 </script>
 
 <template>
@@ -220,7 +346,8 @@ const handleSelectChange = (data) => {
             <template #extra>
               <div class="flex items-center">
                 <el-button>清除</el-button>
-                <el-button type="primary" class="ml-2" @click="handleSave">保存</el-button>
+                <el-button v-if="caseBaseForm.id" type="primary" class="ml-2" @click="handleUpdateSave">修改</el-button>
+                <el-button v-if="!caseBaseForm.id" type="primary" class="ml-2" @click="handleCreateSave">保存</el-button>
               </div>
             </template>
           </el-page-header>
@@ -234,15 +361,17 @@ const handleSelectChange = (data) => {
               用例基础数据
             </h1>
             <el-form :model="caseBaseForm"
+                     ref="caseBaseFormRef"
+                     :rules="caseBaseFormRules"
                      class="case-base-form"
                      label-position="right"
                      label-width="auto"
                      size="default"
             >
-              <el-form-item label="用例名称">
+              <el-form-item label="用例名称" prop="caseName">
                 <el-input v-model="caseBaseForm.caseName" placeholder="请输入用例名称" clearable/>
               </el-form-item>
-              <el-form-item label="所属项目" prop="responsible">
+              <el-form-item label="所属项目" prop="projectName">
                 <el-select
                     v-model="caseBaseForm.projectName"
                     filterable
@@ -266,7 +395,6 @@ const handleSelectChange = (data) => {
               <el-form-item label="优先级" prop="priority">
                 <el-select
                     v-model="caseBaseForm.priority"
-                    clearable
                     placeholder="请选择优先级"
                 >
                   <el-option
@@ -279,7 +407,6 @@ const handleSelectChange = (data) => {
               <el-form-item label="请求方法" prop="method">
                 <el-select
                     v-model="caseBaseForm.method"
-                    clearable
                     placeholder="请选择请求方法"
                 >
                   <el-option
@@ -289,7 +416,7 @@ const handleSelectChange = (data) => {
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="路径">
+              <el-form-item label="路径" prop="path">
                 <el-input v-model="caseBaseForm.path" placeholder="请输入路径" clearable/>
               </el-form-item>
             </el-form>
@@ -299,41 +426,41 @@ const handleSelectChange = (data) => {
               前置用例
             </h1>
             <el-transfer
-                v-model="value"
+                v-model="selectedValue"
                 filterable
-                :filter-method="filterMethod"
-                filter-placeholder="State Abbreviations"
-                :data="data"
+                filter-placeholder="请输入用例名称"
+                :titles="['未选', '已选']"
+                :data="allTestCase"
+                :props="{key: 'id', label: 'case_name'}"
                 class="case-transfer"
-            />
+            >
+            </el-transfer>
           </el-main>
         </div>
         <div class="test-case-footer">
           <el-tabs
               v-model="editableTabsValue"
               class="test-data-tabs"
-              @tab-click="handleClick"
               type="card"
           >
             <el-tab-pane label="Headers" name="headers">
-              <KeyValueEditor :data="headerKeyValue" @update:data="handleHeaderKeyValueUpdate"></KeyValueEditor>
+              <KeyValueEditor v-model="headerKeyValue" />
             </el-tab-pane>
             <el-tab-pane label="Params" name="params">
-              <KeyValueEditor :data="paramsKeyValue" @update:data="handleParamsKeyValueUpdate"/>
+              <KeyValueEditor v-model="paramsKeyValue"/>
             </el-tab-pane>
             <el-tab-pane label="Body" name="body">
-              <JsonEditorVue class="json-editor" language="zh">
-
+              <JsonEditorVue class="json-editor" v-model="bodyData">
               </JsonEditorVue>
             </el-tab-pane>
             <el-tab-pane label="断言规则" name="assertion">
-              <AssertEditor :data="assertData" @update:data="handleAssertDataUpdate"/>
+              <AssertEditor v-model="assertData"/>
             </el-tab-pane>
             <el-tab-pane label="取值规则" name="fetch">
-              <KeyValueEditor :data="fetchKeyValue" @update:data="handleFetchKeyValueUpdate"/>
+              <KeyValueEditor v-model="fetchKeyValue"/>
             </el-tab-pane>
             <el-tab-pane label="依赖参数" name="dependent">
-              <KeyValueEditor :data="dependentKeyValue" @update:data="handleDependentKeyValueUpdate"/>
+              <KeyValueEditor v-model="dependentKeyValue"/>
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -343,11 +470,6 @@ const handleSelectChange = (data) => {
 </template>
 
 <style scoped>
-.edit-case-card {
-}
-
-.test-case-container {
-}
 
 .pageHeader {
   width: 100%;
@@ -425,13 +547,10 @@ h1 {
   padding-top: 20px;
   text-align: center;
   --el-transfer-panel-width: 300px;
-  --el-checkbox-font-size: 20px;
-  --el-checkbox-input-height: 20px;
-  --el-checkbox-input-width: 20px
 }
 
 :deep(.el-checkbox.el-checkbox--small .el-checkbox__label) {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .el-form-item {
