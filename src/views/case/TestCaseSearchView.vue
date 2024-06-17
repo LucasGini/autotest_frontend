@@ -208,6 +208,7 @@ const handleRowDblclick = (row, column, event) => {
           <el-form :model="searchForm"
                    class="search-form"
                    label-position="right"
+                   :inline="true"
           >
             <el-form-item label="用例名称">
               <el-input v-model="searchForm.caseName" placeholder="请输入用例名称" style="width: 150px;" clearable/>
@@ -261,7 +262,7 @@ const handleRowDblclick = (row, column, event) => {
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="路径">
+            <el-form-item label="路径" f>
               <el-input v-model="searchForm.path" placeholder="请输入路径" style="width: 150px;" clearable/>
             </el-form-item>
             <el-form-item>
