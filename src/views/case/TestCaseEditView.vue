@@ -290,6 +290,7 @@ const buildTestCaseRequestData = () => {
 // 新增测试用例
 const handleCreateSave = async () => {
   try {
+    isLoading.value = true
     await caseBaseFormRef.value.validate().catch(err => {
       const message = Object.values(err)[0]
       console.log(typeof message, message)
@@ -307,15 +308,17 @@ const handleCreateSave = async () => {
     }
   } catch (error) {
     ElMessage.error(error)
+  } finally {
+    isLoading.value = false
   }
 }
 
 // 修改测试用例
 const handleUpdateSave = async () => {
   try {
+    isLoading.value = true
     await caseBaseFormRef.value.validate().catch(err => {
       const message = Object.values(err)[0]
-      console.log(typeof message, message)
       if (message.length > 0 && message[0]) {
         throw message[0]
       } else
@@ -330,6 +333,8 @@ const handleUpdateSave = async () => {
     }
   } catch (error) {
     ElMessage.error(error)
+  } finally {
+    isLoading.value = false
   }
 }
 
