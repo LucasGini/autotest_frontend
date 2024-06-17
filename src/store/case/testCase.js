@@ -6,10 +6,10 @@ import {getTestCaseList, getTestCaseInfo} from "@/service/case/testCaseService.j
 export const useTestCaseStore = defineStore('testCase', () => {
 
     // 测试用例列表
-    const testCaseList = reactive([])
+    const testCaseList = ref([])
 
     // 所有测试用例
-    const allTestCase = reactive([])
+    const allTestCase = ref([])
 
     // 测试用例详情
     const testCaseInfo = reactive({
@@ -48,7 +48,7 @@ export const useTestCaseStore = defineStore('testCase', () => {
     // 更新测试用例列表
     const setTestCaseList = async (config) => {
         const response = await getTestCaseList(config)
-        Object.assign(testCaseList, response.data.data)
+        testCaseList.value = response.data.data
         return response
     }
 
@@ -56,7 +56,7 @@ export const useTestCaseStore = defineStore('testCase', () => {
     const setAllTestCase = async () => {
         const config = { params: { searchType: 'all' }}
         const response = await getTestCaseList(config)
-        Object.assign(allTestCase, response.data.data)
+        allTestCase.value = response.data.data
         return response
     }
 
