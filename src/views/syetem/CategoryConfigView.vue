@@ -24,7 +24,7 @@ const initPage = async () => {
 }
 
 // 类型组
-const categoryConfigGroup = ref('testAccount')
+const categoryConfigGroup = ref()
 
 // 查询类型配置树方法
 const fetchCategoryConfigTree = async () => {
