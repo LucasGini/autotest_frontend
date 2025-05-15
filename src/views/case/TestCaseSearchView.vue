@@ -17,7 +17,7 @@ onMounted( async () => {
 })
 
 // 项目列表
-const testCaseList = reactive([])
+const testCaseList = ref([])
 
 // 分页参数
 const currentPage = ref(1)
@@ -86,7 +86,7 @@ const fetchTestcaseList = async () => {
         ordering: sortOrder.value ? sortOrder.value : null
       }
     })
-    Object.assign(testCaseList, testCaseStore.testCaseList)
+    testCaseList.value =  testCaseStore.testCaseList
     totalItems.value = response.data.total
   } catch ( error ){
     if (error instanceof AxiosError) {
@@ -208,9 +208,10 @@ const handleRowDblclick = (row, column, event) => {
           <el-form :model="searchForm"
                    class="search-form"
                    label-position="right"
+                   :inline="true"
           >
             <el-form-item label="用例名称">
-              <el-input v-model="searchForm.caseName" placeholder="请输入用例名称" clearable/>
+              <el-input v-model="searchForm.caseName" placeholder="请输入用例名称" style="width: 150px;" clearable/>
             </el-form-item>
             <el-form-item label="所属项目" prop="responsible">
               <el-select
@@ -223,6 +224,7 @@ const handleRowDblclick = (row, column, event) => {
                   :remote-method="remoteMethod"
                   @blur="handleResponsibleBlur"
                   :loading="remoteSearchLoading"
+                  style="width: 150px;"
               >
                 <el-option
                     v-for="item in searchProjectList"
@@ -237,6 +239,7 @@ const handleRowDblclick = (row, column, event) => {
                   v-model="searchForm.priority"
                   clearable
                   placeholder="请选择优先级"
+                  style="width: 150px;"
               >
                 <el-option
                     v-for="item in priorityEnum"
@@ -250,6 +253,7 @@ const handleRowDblclick = (row, column, event) => {
                   v-model="searchForm.method"
                   clearable
                   placeholder="请选择请求方法"
+                  style="width: 160px;"
               >
                 <el-option
                     v-for="item in methodEnum"
@@ -258,8 +262,8 @@ const handleRowDblclick = (row, column, event) => {
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="路径">
-              <el-input v-model="searchForm.path" placeholder="请输入路径" clearable/>
+            <el-form-item label="路径" f>
+              <el-input v-model="searchForm.path" placeholder="请输入路径" style="width: 150px;" clearable/>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="searchFormSubmit">查询</el-button>
@@ -350,7 +354,7 @@ const handleRowDblclick = (row, column, event) => {
 }
 
 .el-form-item {
-  margin-right: 50px;
+  margin-right: 30px;
   width: 200px;
 }
 
